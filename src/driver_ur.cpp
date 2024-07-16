@@ -61,49 +61,57 @@ int main(int argc, char* argv[])
         robot_ip = std::string(argv[1]);
     }
 
+    auto dashboard_client = std::make_unique<DashboardClient>(robot_ip);
+
     // Making the robot ready for the program by:
     // Connect the the robot Dashboard
-    g_my_dashboard.reset(new DashboardClient(robot_ip));
-    if (!g_my_dashboard->connect())
+    if (!dashboard_client->connect())
     {
         URCL_LOG_ERROR("Could not connect to dashboard");
         return 1;
     }
 
     // Stop program, if there is one running
-    if (!g_my_dashboard->commandStop())
+    if (!dashboard_client->commandStop())
     {
         URCL_LOG_ERROR("Could not send stop program command");
         return 1;
     }
 
     // Power it off
-    if (!g_my_dashboard->commandPowerOff())
+    if (!dashboard_client->commandPowerOff())
     {
         URCL_LOG_ERROR("Could not send Power off command");
         return 1;
     }
 
     // Power it on
-    if (!g_my_dashboard->commandPowerOn())
+    if (!dashboard_client->commandPowerOn())
     {
         URCL_LOG_ERROR("Could not send Power on command");
         return 1;
     }
 
     // Release the brakes
-    if (!g_my_dashboard->commandBrakeRelease())
+    if (!dashboard_client->commandBrakeRelease())
     {
         URCL_LOG_ERROR("Could not send BrakeRelease command");
         return 1;
     }
 
     // Now the robot is ready to receive a program
-
     std::unique_ptr<ToolCommSetup> tool_comm_setup;
     const bool HEADLESS = true;
-    g_my_driver.reset(new UrDriver(robot_ip, SCRIPT_FILE, OUTPUT_RECIPE, INPUT_RECIPE, &handleRobotProgramState, HEADLESS,
-                                   std::move(tool_comm_setup), CALIBRATION_CHECKSUM));
+    auto ur_driver = std::make_shared<UrDriver>(
+        robot_ip,
+        SCRIPT_FILE,
+        OUTPUT_RECIPE,
+        INPUT_RECIPE,
+        &handleRobotProgramState,
+        HEADLESS,
+        std::move(tool_comm_setup),
+        CALIBRATION_CHECKSUM
+        );
 
 }
 

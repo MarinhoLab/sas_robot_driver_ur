@@ -27,6 +27,8 @@
 #include <iostream>
 #include <memory>
 
+#include <ur_client_library/ur/dashboard_client.h>
+#include <ur_client_library/ur/ur_driver.h>
 
 namespace sas
 {
@@ -34,17 +36,19 @@ namespace sas
 class RobotDriverUR::Impl
 {
 public:
-    std::shared_ptr<LBRJointCommandOverlayClient> trafo_client_;
+    std::shared_ptr<urcl::UrDriver> ur_driver_;
+    std::unique_ptr<urcl::DashboardClient> dashboard_client_;
 
     Impl()
-    {
-        trafo_client_ = std::make_shared<LBRJointCommandOverlayClient>();
-    };
+        {
+
+        };
 
 };
 
-RobotDriverUR::RobotDriverKuka(const RobotDriverUR& configuration, std::atomic_bool* break_loops):
-RobotDriver(break_loops)
+RobotDriverUR::RobotDriverUR(const RobotDriverURConfiguration& configuration, std::atomic_bool* break_loops):
+    RobotDriver(break_loops),
+    configuration_(configuration)
 {
     impl_ = std::make_unique<RobotDriverUR::Impl>();
     joint_limits_ = configuration.joint_limits;
@@ -96,7 +100,7 @@ void RobotDriverUR::disconnect()
 
 void RobotDriverUR::initialize()
 {
-    //Nothing to do
+    impl_->dashboard_client_ = std::make_unique<urcl::DashboardClient>(configuration_.ip);
 }
 
 void RobotDriverUR::deinitialize()

@@ -38,7 +38,7 @@ class DriverBcap;
 
 struct RobotDriverURConfiguration
 {
-    std::string name;
+    std::string ip;
     std::tuple<VectorXd,VectorXd> joint_limits;
 };
 
@@ -57,7 +57,7 @@ public:
     RobotDriverUR()=delete;
     ~RobotDriverUR();
 
-    RobotDriverUR(const RobotDriverUR& configuration, std::atomic_bool* break_loops);
+    RobotDriverUR(const RobotDriverURConfiguration &configuration, std::atomic_bool* break_loops);
 
     VectorXd get_joint_positions() override;
     void set_target_joint_positions(const VectorXd& desired_joint_positions_rad) override;
