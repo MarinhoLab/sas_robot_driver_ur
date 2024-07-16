@@ -1,0 +1,3 @@
+[submodule "src/ur/Universal_Robots_Client_Library"]
+	path = src/ur/Universal_Robots_Client_Library
+	url = https://github.com/UniversalRobots/Universal_Robots_Client_Library
