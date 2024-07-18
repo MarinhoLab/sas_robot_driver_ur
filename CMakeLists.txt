@@ -22,7 +22,43 @@ find_package(sas_robot_driver REQUIRED)
 add_library(${PROJECT_NAME} SHARED
     src/sas_robot_driver_ur.cpp
     src/driver_ur.cpp
+    src/driver_ur_joint_positions_manager.cpp
 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/default_log_handler.cpp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/log.cpp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/helpers.cpp>
+
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/ur/calibration_checker.cpp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/ur/version_information.cpp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/ur/ur_driver.cpp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/ur/dashboard_client.cpp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/ur/robot_receive_timeout.cpp>
+
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/primary/primary_package.cpp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/primary/robot_message.cpp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/primary/robot_state.cpp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/primary/robot_message/version_message.cpp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/primary/robot_state/kinematics_info.cpp>
+
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/rtde/rtde_writer.cpp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/rtde/rtde_client.cpp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/rtde/rtde_package.cpp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/rtde/data_package.cpp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/rtde/request_protocol_version.cpp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/rtde/control_package_start.cpp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/rtde/control_package_pause.cpp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/rtde/control_package_setup_inputs.cpp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/rtde/control_package_setup_outputs.cpp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/rtde/get_urcontrol_version.cpp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/rtde/text_message.cpp>
+
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/control/script_command_interface.cpp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/control/script_sender.cpp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/control/reverse_interface.cpp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/control/trajectory_point_interface.cpp>
+
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/comm/tcp_server.cpp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/comm/tcp_socket.cpp>
     )
 
 ament_target_dependencies(${PROJECT_NAME}

@@ -24,24 +24,16 @@
  */
 //----------------------------------------------------------------------
 
+#include <iostream>
+#include <memory>
+
 #include <ur_client_library/ur/dashboard_client.h>
 #include <ur_client_library/ur/ur_driver.h>
 #include <ur_client_library/types.h>
 
-#include <iostream>
-#include <memory>
+#include "driver_ur_joint_positions_manager.hpp"
 
 using namespace urcl;
-
-// In a real-world example it would be better to get those values from command line parameters / a
-// better configuration system such as Boost.Program_options
-const std::string DEFAULT_ROBOT_IP = "192.168.56.101";
-const std::string SCRIPT_FILE = "resources/external_control.urscript";
-const std::string OUTPUT_RECIPE = "examples/resources/rtde_output_recipe.txt";
-const std::string INPUT_RECIPE = "examples/resources/rtde_input_recipe.txt";
-const std::string CALIBRATION_CHECKSUM = "calib_12788084448423163542";
-
-//vector6d_t g_joint_positions;
 
 // We need a callback function to register. See UrDriver's parameters for details.
 void handleRobotProgramState(bool program_running)
@@ -50,77 +42,11 @@ void handleRobotProgramState(bool program_running)
     std::cout << "\033[1;32mProgram running: " << std::boolalpha << program_running << "\033[0m\n" << std::endl;
 }
 
-int main(int argc, char* argv[])
-{
-    urcl::setLogLevel(urcl::LogLevel::INFO);
-
-    // Parse the ip arguments if given
-    std::string robot_ip = DEFAULT_ROBOT_IP;
-    if (argc > 1)
-    {
-        robot_ip = std::string(argv[1]);
-    }
-
-    auto dashboard_client = std::make_unique<DashboardClient>(robot_ip);
-
-    // Making the robot ready for the program by:
-    // Connect the the robot Dashboard
-    if (!dashboard_client->connect())
-    {
-        URCL_LOG_ERROR("Could not connect to dashboard");
-        return 1;
-    }
-
-    // Stop program, if there is one running
-    if (!dashboard_client->commandStop())
-    {
-        URCL_LOG_ERROR("Could not send stop program command");
-        return 1;
-    }
-
-    // Power it off
-    if (!dashboard_client->commandPowerOff())
-    {
-        URCL_LOG_ERROR("Could not send Power off command");
-        return 1;
-    }
-
-    // Power it on
-    if (!dashboard_client->commandPowerOn())
-    {
-        URCL_LOG_ERROR("Could not send Power on command");
-        return 1;
-    }
-
-    // Release the brakes
-    if (!dashboard_client->commandBrakeRelease())
-    {
-        URCL_LOG_ERROR("Could not send BrakeRelease command");
-        return 1;
-    }
-
-    // Now the robot is ready to receive a program
-    std::unique_ptr<ToolCommSetup> tool_comm_setup;
-    const bool HEADLESS = true;
-    auto ur_driver = std::make_shared<UrDriver>(
-        robot_ip,
-        SCRIPT_FILE,
-        OUTPUT_RECIPE,
-        INPUT_RECIPE,
-        &handleRobotProgramState,
-        HEADLESS,
-        std::move(tool_comm_setup),
-        CALIBRATION_CHECKSUM
-        );
-
-}
-
-
 int communication_thread_loop(std::shared_ptr<UrDriver> ur_driver,
+                              std::shared_ptr<sas::URJointPositionsManager> ur_joint_positions_manager,
                               std::atomic_bool* break_loops)
 {
     //Murilo: despite the many modifications, I've left the original comments from the example, hoping that they might be useful in the future.
-    vector6d_t joint_positions;
 
     // Once RTDE communication is started, we have to make sure to read from the interface buffer, as
     // otherwise we will get pipeline overflows. Therefor, do this directly before starting your main
@@ -134,9 +60,10 @@ int communication_thread_loop(std::shared_ptr<UrDriver> ur_driver,
             // robot will effectively be in charge of setting the frequency of this loop.
             // In a real-world application this thread should be scheduled with real-time priority in order
             // to ensure that this is called in time.
-            std::unique_ptr<rtde_interface::DataPackage> data_pkg = ur_driver->getDataPackage();
+            std::unique_ptr<rtde_interface::DataPackage> data_pkg(ur_driver->getDataPackage());
             if (data_pkg)
             {
+                vector6d_t joint_positions;
                 // Read current joint positions from robot data
                 if (!data_pkg->getData("actual_q", joint_positions))
                 {
@@ -145,14 +72,23 @@ int communication_thread_loop(std::shared_ptr<UrDriver> ur_driver,
                     throw std::runtime_error(error_msg);
                 }
 
-                // Setting the RobotReceiveTimeout time is for example purposes only. This will make the example running more
-                // reliable on non-realtime systems. Use with caution in productive applications.
-                // Murilo: This will run on a realtime system, so I've removed it, i.e., it defaults to 20ms
-                bool ret = ur_driver->writeJointCommand(joint_positions, comm::ControlMode::MODE_SERVOJ);
-                if (!ret)
+                // Store in the thread-safe object
+                ur_joint_positions_manager->set_current_joint_positions(joint_positions);
+
+
+                // Murilo: We should be sure that valid joint positions are available in the buffer.
+                if(ur_joint_positions_manager->is_target_joint_position_valid())
                 {
-                    std::string error_msg = "Could not send joint command. Is the robot in remote control?";
-                    throw std::runtime_error(error_msg);
+                    // Setting the RobotReceiveTimeout time is for example purposes only. This will make the example running more
+                    // reliable on non-realtime systems. Use with caution in productive applications.
+                    // Murilo: This will run on a realtime system, so I've removed it, i.e., it defaults to 20ms
+                    // The target joint positions is obtained from the thread-safe object
+                    bool ret = ur_driver->writeJointCommand(ur_joint_positions_manager->get_target_joint_positions(), comm::ControlMode::MODE_SERVOJ);
+                    if (!ret)
+                    {
+                        std::string error_msg = "Could not send joint command. Is the robot in remote control?";
+                        throw std::runtime_error(error_msg);
+                    }
                 }
             }
             else
@@ -161,7 +97,8 @@ int communication_thread_loop(std::shared_ptr<UrDriver> ur_driver,
             }
         }
     } catch (...) {
-        break_loops->store(false);
+        //Murilo: Break loops in case of exceptions.
+        break_loops->store(true);
     }
 
     ur_driver->stopControl();

@@ -38,7 +38,18 @@ class DriverBcap;
 
 struct RobotDriverURConfiguration
 {
+    // Examples from UR
+    //const std::string DEFAULT_ROBOT_IP = "192.168.56.101";
+    //const std::string SCRIPT_FILE = "resources/external_control.urscript";
+    //const std::string OUTPUT_RECIPE = "examples/resources/rtde_output_recipe.txt";
+    //const std::string INPUT_RECIPE = "examples/resources/rtde_input_recipe.txt";
+    //const std::string CALIBRATION_CHECKSUM = "calib_12788084448423163542";
+
     std::string ip;
+    std::string script_file;
+    std::string output_recipe;
+    std::string input_recipe;
+    std::string calibration_checksum;
     std::tuple<VectorXd,VectorXd> joint_limits;
 };
 
