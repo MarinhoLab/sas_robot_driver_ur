@@ -163,6 +163,16 @@ install(PROGRAMS
 )
 ##END## PYTHON EXECUTABLES #####
 
+# According to this file, this is the first time I've attempted this
+##### Relevant Resource Files #####
+install(FILES
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/resources/external_control.urscript>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/examples/resources/rtde_input_recipe.txt>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/examples/resources/rtde_output_recipe.txt>
+  DESTINATION share/${PROJECT_NAME}
+)
+##END## PYTHON EXECUTABLES #####
+
 if(BUILD_TESTING)
     find_package(ament_lint_auto REQUIRED)
     # the following line skips the linter which checks for copyrights
