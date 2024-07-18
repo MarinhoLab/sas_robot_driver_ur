@@ -58,12 +58,19 @@ int main(int argc, char** argv)
 
         sas::RobotDriverURConfiguration configuration;
 
+        //configuration.ip = "192.168.1.245";
+        //configuration.script_file = "/home/b40617mm/ros2_ws/install/sas_robot_driver_ur/share/sas_robot_driver_ur/external_control.urscript";
+        //configuration.output_recipe = "/home/b40617mm/ros2_ws/install/sas_robot_driver_ur/share/sas_robot_driver_ur/rtde_output_recipe.txt";
+        //configuration.input_recipe = "/home/b40617mm/ros2_ws/install/sas_robot_driver_ur/share/sas_robot_driver_ur/rtde_input_recipe.txt";
+        //configuration.calibration_checksum = "calib_12788084448423163542";
         sas::get_ros_parameter(node,"ip",configuration.ip);
         sas::get_ros_parameter(node,"script_file",configuration.script_file);
         sas::get_ros_parameter(node,"output_recipe",configuration.output_recipe);
         sas::get_ros_parameter(node,"input_recipe",configuration.input_recipe);
         sas::get_ros_parameter(node,"calibration_checksum",configuration.calibration_checksum);
 
+        //std::vector<double> joint_limits_min{-360.0, -360.0, -360.0, -360.0, -360.0, -720.0};
+        //std::vector<double> joint_limits_max{360.0, 360.0, 360.0, 360.0, 360.0, 720.0};
         std::vector<double> joint_limits_min;
         std::vector<double> joint_limits_max;
         sas::get_ros_parameter(node,"joint_limits_min",joint_limits_min);
@@ -72,6 +79,7 @@ int main(int argc, char** argv)
                                       deg2rad(sas::std_vector_double_to_vectorxd(joint_limits_max))};
 
         sas::RobotDriverROSConfiguration robot_driver_ros_configuration;
+        //robot_driver_ros_configuration.thread_sampling_time_sec = 0.001;
         sas::get_ros_parameter(node,"thread_sampling_time_sec",robot_driver_ros_configuration.thread_sampling_time_sec);
         robot_driver_ros_configuration.robot_driver_provider_prefix = node->get_name();
 

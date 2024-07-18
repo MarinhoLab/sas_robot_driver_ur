@@ -62,6 +62,7 @@ RobotDriverUR::RobotDriverUR(const RobotDriverURConfiguration& configuration, st
 {
     impl_ = std::make_unique<RobotDriverUR::Impl>();
     impl_->dashboard_client_ = std::make_unique<urcl::DashboardClient>(configuration_.ip);
+    impl_->ur_joint_positions_manager_ = std::make_shared<sas::URJointPositionsManager>();
     joint_limits_ = configuration.joint_limits;
 }
 
@@ -84,11 +85,11 @@ void RobotDriverUR::set_target_joint_positions(const VectorXd &desired_joint_pos
         throw std::runtime_error("Incorrect vector size in RobotDriverUR::set_target_joint_positions");
 
     urcl::vector6d_t std_array{desired_joint_positions_rad(0),
-                               desired_joint_positions_rad(1),
-                               desired_joint_positions_rad(2),
-                               desired_joint_positions_rad(3),
-                               desired_joint_positions_rad(4),
-                               desired_joint_positions_rad(5),};
+        desired_joint_positions_rad(1),
+        desired_joint_positions_rad(2),
+        desired_joint_positions_rad(3),
+        desired_joint_positions_rad(4),
+        desired_joint_positions_rad(5),};
     impl_->ur_joint_positions_manager_->set_target_joint_positions(std_array);
 }
 
@@ -125,7 +126,7 @@ void RobotDriverUR::initialize()
     std::unique_ptr<urcl::ToolCommSetup> tool_comm_setup;
     const bool HEADLESS = true;
 
-    auto ur_driver = std::make_shared<urcl::UrDriver>(
+    impl_->ur_driver_ = std::make_shared<urcl::UrDriver>(
         configuration_.ip,
         configuration_.script_file,
         configuration_.output_recipe,
@@ -139,18 +140,21 @@ void RobotDriverUR::initialize()
     fri_thread_ = std::thread(communication_thread_loop, impl_->ur_driver_, impl_->ur_joint_positions_manager_, break_loops_);
 
     //Set the communication thread to be realtime with SCHED_FIFO.
-    sched_param sch;
-    int policy;
-    pthread_getschedparam(fri_thread_.native_handle(), &policy, &sch);
-    sch.sched_priority = 20;
-    if (pthread_setschedparam(fri_thread_.native_handle(), SCHED_FIFO, &sch)) {
-        std::cout << "Failed to setschedparam: " << std::strerror(errno) << '\n';
-    }
+    //sched_param sch;
+    //int policy;
+    //pthread_getschedparam(fri_thread_.native_handle(), &policy, &sch);
+    //sch.sched_priority = 20;
+    //if (pthread_setschedparam(fri_thread_.native_handle(), SCHED_FIFO, &sch)) {
+    //    std::cout << "Failed to setschedparam: " << std::strerror(errno) << '\n';
+    //}
 
     // We need meaningful information to be obtained from the robot before moving on.
     // In addition, we guarantee that this doesn't lock us with break_loops.
     while (!(*break_loops_) && !impl_->ur_joint_positions_manager_->is_current_joint_position_valid())
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    {
+        std::cout << "Waiting for valid joint configuration..." << std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    }
 }
 
 

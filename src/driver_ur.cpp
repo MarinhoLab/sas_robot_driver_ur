@@ -96,8 +96,9 @@ int communication_thread_loop(std::shared_ptr<UrDriver> ur_driver,
                 URCL_LOG_WARN("Could not get fresh data package from robot");
             }
         }
-    } catch (...) {
+    } catch (const std::exception& e) {
         //Murilo: Break loops in case of exceptions.
+        std::cout << e.what() << std::endl;
         break_loops->store(true);
     }
 
