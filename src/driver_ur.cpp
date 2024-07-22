@@ -36,10 +36,11 @@
 using namespace urcl;
 
 // We need a callback function to register. See UrDriver's parameters for details.
-void handleRobotProgramState(bool program_running)
+void handleRobotProgramState(bool)
 {
     // Print the text in green so we see it better
-    std::cout << "\033[1;32mProgram running: " << std::boolalpha << program_running << "\033[0m\n" << std::endl;
+    //std::cout << "\033[1;32mProgram running: " << std::boolalpha << program_running << "\033[0m\n" << std::endl;
+    //July 22nd 2024, verifying if this print is the reason why the robot loses realtime capabilities after being restarted.
 }
 
 int communication_thread_loop(std::shared_ptr<UrDriver> ur_driver,
