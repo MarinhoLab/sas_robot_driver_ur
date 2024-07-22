@@ -28,3 +28,6 @@ This code will move the robot. Be sure that the workspace is free and safe for o
 
 https://github.com/user-attachments/assets/5902f735-6c42-4825-a552-58e565bbf3f3
 
+## Troubleshooting tips
+
+https://github.com/UniversalRobots/Universal_Robots_ROS_Driver/issues/507
