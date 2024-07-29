@@ -25,7 +25,7 @@ def generate_launch_description():
             executable='sas_robot_driver_ur_node',
             name='ur_1',
             parameters=[{
-                "ip": "192.168.1.245",
+                "ip": "192.170.10.22",
                 "script_file": os.path.join(get_package_share_directory("sas_robot_driver_ur"),
                                             "external_control.urscript"),
                 "output_recipe": os.path.join(get_package_share_directory("sas_robot_driver_ur"),
