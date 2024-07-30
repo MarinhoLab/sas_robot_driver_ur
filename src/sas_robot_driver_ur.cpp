@@ -139,15 +139,6 @@ void RobotDriverUR::initialize()
 
     fri_thread_ = std::thread(communication_thread_loop, impl_->ur_driver_, impl_->ur_joint_positions_manager_, break_loops_);
 
-    //Set the communication thread to be realtime with SCHED_FIFO.
-    //sched_param sch;
-    //int policy;
-    //pthread_getschedparam(fri_thread_.native_handle(), &policy, &sch);
-    //sch.sched_priority = 20;
-    //if (pthread_setschedparam(fri_thread_.native_handle(), SCHED_FIFO, &sch)) {
-    //    std::cout << "Failed to setschedparam: " << std::strerror(errno) << '\n';
-    //}
-
     // We need meaningful information to be obtained from the robot before moving on.
     // In addition, we guarantee that this doesn't lock us with break_loops.
     while (!(*break_loops_) && !impl_->ur_joint_positions_manager_->is_current_joint_position_valid())
