@@ -5,6 +5,14 @@
 
 *The CoppeliaSim scene must be fixed as the UR3 in CoppeliaSim and the UR3e we have seem to have different joint directions.*
 
+## Working with CoppeliaSim
+
+
+
+https://github.com/user-attachments/assets/bfee1148-bfe3-4425-80da-04fcd65d2b18
+
+
+
 ## Working with the real robot
 
 For using the real robot, you **must** have the risk assessments in place. This guide is meant to be helpful but holds absolutely no liability whatsoever. More details are available in the software license.
