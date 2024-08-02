@@ -40,7 +40,11 @@ https://github.com/MarinhoLab/sas_robot_driver_ur/blob/528d18bcf50ef257df8e9c05e
 ### Client
 
 After your server is running, you can obtain current joint positions and send joint position commands.
-All those are managed through ROS2 topics. The benefit is that the [sas_robot_driver](https://github.com/SmartArmStack/sas_robot_driver/tree/jazzy) library makes that transparent to the user, so you will not have to create your own subscribers/publishers manually.
+All those are managed through ROS2 topics. The benefit is that the [sas_robot_driver](https://github.com/SmartArmStack/sas_robot_driver/tree/jazzy) library makes that transparent to the user with the `RobotDriverClient` class,
+
+https://github.com/MarinhoLab/sas_robot_driver_ur/blob/518280198805c81c389f21f86f8cee40b348815d/scripts/joint_interface_example.py#L51
+
+so you will not have to create your own subscribers/publishers manually.
 
 An example on how to do that using `rclpy` is available at 
 
