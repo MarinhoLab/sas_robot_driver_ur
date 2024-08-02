@@ -1,6 +1,19 @@
 # sas_robot_driver_ur
 
 
+## Initial setup
+
+```commandLine
+mkdir ~/ros2_ws
+cd ~/ros2_ws
+git clone https://github.com/SmartArmStack/smart_arm_stack_ROS2.git --recursive
+```
+
+```
+cd ~/ros2_ws
+colcon build
+```
+
 ## Running the joint space example in CoppeliaSim
 
 *The CoppeliaSim scene must be fixed as the UR3 in CoppeliaSim and the UR3e we have seem to have different joint directions.*
