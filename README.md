@@ -4,7 +4,7 @@
 ## Initial setup
 
 ```commandLine
-mkdir ~/ros2_ws
+mkdir -p ~/ros2_ws/src
 cd ~/ros2_ws
 git clone https://github.com/SmartArmStack/smart_arm_stack_ROS2.git --recursive
 ```
