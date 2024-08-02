@@ -26,14 +26,14 @@ This package is intended to expose joint positions of the robot to ROS2. It is b
 
 ### Server
 
-Each robot will have a server. That is completely managed by [sas_robot_driver](https://github.com/SmartArmStack/sas_robot_driver/tree/jazzy). 
-You **must** use a launch file to create your own servers, if needed. Use `launch/real_robot_example_launch.py` and modify as needed.
+Each robot node will create a server with ROS2 topics. That is completely managed by [sas_robot_driver](https://github.com/SmartArmStack/sas_robot_driver/tree/jazzy). 
+You **must** use a launch file to create your own servers, if needed. For guidance, use `launch/real_robot_example_launch.py` and modify as needed.
 
 For most users, you will only need to modify the ip address to match the ip address of your robot.
 
 https://github.com/MarinhoLab/sas_robot_driver_ur/blob/528d18bcf50ef257df8e9c05ef1df9dc15b26eb4/launch/real_robot_example_launch.py#L28
 
-If you have multiple robots of the same time, remember to change each one to have a unique name.
+If you have multiple robots, remember to change each one to have a unique name.
 
 https://github.com/MarinhoLab/sas_robot_driver_ur/blob/528d18bcf50ef257df8e9c05ef1df9dc15b26eb4/launch/real_robot_example_launch.py#L26
 
