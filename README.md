@@ -1,5 +1,11 @@
 # sas_robot_driver_ur
 
+## Interfacing your code with this package
+
+Refer to
+```
+scripts/joint_interface_example.py
+```
 
 ## Initial setup
 
