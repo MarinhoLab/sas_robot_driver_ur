@@ -1,13 +1,10 @@
 # sas_robot_driver_ur
 
-## Interfacing your code with this package
-
-Refer to
-```
-scripts/joint_interface_example.py
-```
-
 ## Initial setup
+
+This is for a system that has all the [prerequisites](https://github.com/SmartArmStack/smart_arm_stack_ROS2/tree/jazzy) installed. 
+
+### Cloning this repository with all SmartArmStack_ROS2 dependencies
 
 ```commandLine
 mkdir -p ~/ros2_ws/src
@@ -15,9 +12,20 @@ cd ~/ros2_ws
 git clone https://github.com/SmartArmStack/smart_arm_stack_ROS2.git --recursive
 ```
 
+### Building and sourcing the repository
+
 ```
 cd ~/ros2_ws
 colcon build
+source install/setup.bash
+```
+
+## Interfacing your code with this package
+
+This package is intended to expose joint positions of the robot to ROS2. An example on how to do that using `rclpy` is available at
+
+```
+scripts/joint_interface_example.py
 ```
 
 ## Running the joint space example in CoppeliaSim
