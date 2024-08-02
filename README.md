@@ -22,7 +22,7 @@ source install/setup.bash
 
 ## Interfacing your code with this package
 
-This package is intended to expose joint positions of the robot to ROS2. It is based on the [sas_robot_driver](https://github.com/SmartArmStack/sas_robot_driver/tree/jazzy) server-client topology. 
+This package is intended to expose joint positions of the robot to ROS2. It is based on the [sas_robot_driver](https://github.com/SmartArmStack/sas_robot_driver/tree/jazzy) server--client topology. 
 
 ### Server
 
