@@ -56,6 +56,24 @@ https://github.com/MarinhoLab/sas_robot_driver_ur/blob/528d18bcf50ef257df8e9c05e
 
 https://github.com/MarinhoLab/sas_robot_driver_ur/blob/528d18bcf50ef257df8e9c05ef1df9dc15b26eb4/scripts/joint_interface_example.py#L72
 
+### Ok, but what is this ROS composer thing?
+
+When using CoppeliaSim, you will notice that we're not interfacing directly with the robot node. You can see that from the name
+
+https://github.com/MarinhoLab/sas_robot_driver_ur/blob/528d18bcf50ef257df8e9c05ef1df9dc15b26eb4/scripts/joint_interface_example.py#L51
+
+and the indirection in this launch file that runs a `sas_robot_driver_ros_composer_node`
+
+https://github.com/MarinhoLab/sas_robot_driver_ur/blob/528d18bcf50ef257df8e9c05ef1df9dc15b26eb4/launch/composed_with_coppeliasim_launch.py#L18
+
+The composer node has two main roles. First, it allows us to abstract many different devices into a single serial robot. This is important for [complex systems](https://github.com/AISciencePlatform). It also allows us to reflect robot state in CoppeliaSim, as a virtual twin.
+
+These are specified in the following parameters in the launch file and most parameters are probably self-evident. The `vrep_dynamically_enabled` is related to a joint being passive or active in CoppeliaSim and this depends on your scene.
+
+https://github.com/MarinhoLab/sas_robot_driver_ur/blob/9fa2f2b5a4aa6a84becec0748a70786772230a76/launch/composed_with_coppeliasim_launch.py#L25-L29
+
+Please note that this means that CoppeliaSim can be executed in any computer accessible with the ip address and port specified, using, in a transparent manner, the legacy [remoteAPI](https://manual.coppeliarobotics.com/en/legacyRemoteApiOverview.htm). It can be a completely separate computer running Windows, for example.
+
 ## Working with CoppeliaSim
 
 https://github.com/user-attachments/assets/bfee1148-bfe3-4425-80da-04fcd65d2b18
