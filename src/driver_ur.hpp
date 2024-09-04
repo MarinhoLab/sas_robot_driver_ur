@@ -6,5 +6,5 @@
 void handleRobotProgramState(bool program_running);
 
 int communication_thread_loop(std::shared_ptr<urcl::UrDriver> ur_driver,
-                              std::shared_ptr<sas::URJointPositionsManager> ur_joint_positions_manager,
+                              std::shared_ptr<sas::URJointInformationManager> ur_joint_positions_manager,
                               std::atomic_bool* break_loops);

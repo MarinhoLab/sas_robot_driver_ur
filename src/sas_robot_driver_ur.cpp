@@ -45,7 +45,7 @@ class RobotDriverUR::Impl
 public:
     std::shared_ptr<urcl::UrDriver> ur_driver_;
     std::unique_ptr<urcl::DashboardClient> dashboard_client_;
-    std::shared_ptr<sas::URJointPositionsManager> ur_joint_positions_manager_;
+    std::shared_ptr<sas::URJointInformationManager> ur_joint_information_manager_;
 
     Impl()
         {
@@ -62,7 +62,7 @@ RobotDriverUR::RobotDriverUR(const RobotDriverURConfiguration& configuration, st
 {
     impl_ = std::make_unique<RobotDriverUR::Impl>();
     impl_->dashboard_client_ = std::make_unique<urcl::DashboardClient>(configuration_.ip);
-    impl_->ur_joint_positions_manager_ = std::make_shared<sas::URJointPositionsManager>();
+    impl_->ur_joint_information_manager_ = std::make_shared<sas::URJointInformationManager>();
     joint_limits_ = configuration.joint_limits;
 }
 
@@ -74,7 +74,7 @@ RobotDriverUR::~RobotDriverUR()
 VectorXd RobotDriverUR::get_joint_positions()
 {
     //The UR libraries use std::array and it's more efficient to keep conversion functions out of the realtime loop, hence, here.
-    auto std_array = impl_->ur_joint_positions_manager_->get_current_joint_positions();
+    auto std_array = impl_->ur_joint_information_manager_->get_current_joint_positions();
     std::vector<double> std_vector(std_array.begin(), std_array.end());
     return sas::std_vector_double_to_vectorxd(std_vector);
 }
@@ -90,10 +90,15 @@ void RobotDriverUR::set_target_joint_positions(const VectorXd &desired_joint_pos
         desired_joint_positions_rad(3),
         desired_joint_positions_rad(4),
         desired_joint_positions_rad(5),};
-    impl_->ur_joint_positions_manager_->set_target_joint_positions(std_array);
+    impl_->ur_joint_information_manager_->set_target_joint_positions(std_array);
 }
 
-
+VectorXd RobotDriverUR::get_joint_velocities()
+{
+    auto std_array = impl_->ur_joint_information_manager_->get_current_joint_velocities();
+    std::vector<double> std_vector(std_array.begin(), std_array.end());
+    return sas::std_vector_double_to_vectorxd(std_vector);
+}
 
 void RobotDriverUR::connect()
 {
@@ -137,11 +142,11 @@ void RobotDriverUR::initialize()
         configuration_.calibration_checksum
         );
 
-    fri_thread_ = std::thread(communication_thread_loop, impl_->ur_driver_, impl_->ur_joint_positions_manager_, break_loops_);
+    fri_thread_ = std::thread(communication_thread_loop, impl_->ur_driver_, impl_->ur_joint_information_manager_, break_loops_);
 
     // We need meaningful information to be obtained from the robot before moving on.
     // In addition, we guarantee that this doesn't lock us with break_loops.
-    while (!(*break_loops_) && !impl_->ur_joint_positions_manager_->is_current_joint_position_valid())
+    while (!(*break_loops_) && !impl_->ur_joint_information_manager_->is_current_joint_position_valid())
     {
         std::cout << "Waiting for valid joint configuration..." << std::endl;
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
