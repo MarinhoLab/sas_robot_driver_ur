@@ -44,7 +44,7 @@ void handleRobotProgramState(bool)
 }
 
 int communication_thread_loop(std::shared_ptr<UrDriver> ur_driver,
-                              std::shared_ptr<sas::URJointPositionsManager> ur_joint_positions_manager,
+                              std::shared_ptr<sas::URJointInformationManager> ur_joint_information_manager,
                               std::atomic_bool* break_loops)
 {
     //Murilo: despite the many modifications, I've left the original comments from the example, hoping that they might be useful in the future.
@@ -73,18 +73,27 @@ int communication_thread_loop(std::shared_ptr<UrDriver> ur_driver,
                     throw std::runtime_error(error_msg);
                 }
 
-                // Store in the thread-safe object
-                ur_joint_positions_manager->set_current_joint_positions(joint_positions);
+                vector6d_t joint_velocities;
+                // Read current joint velocities from robot data
+                if (!data_pkg->getData("actual_qd", joint_velocities))
+                {
+                    // This throwing should never happen unless misconfigured
+                    std::string error_msg = "Did not find 'actual_qd' in data sent from robot. This should not happen!";
+                    throw std::runtime_error(error_msg);
+                }
 
+                // Store in the thread-safe object
+                ur_joint_information_manager->set_current_joint_positions(joint_positions);
+                ur_joint_information_manager->set_current_joint_velocities(joint_velocities);
 
                 // Murilo: We should be sure that valid joint positions are available in the buffer.
-                if(ur_joint_positions_manager->is_target_joint_position_valid())
+                if(ur_joint_information_manager->is_target_joint_position_valid())
                 {
                     // Setting the RobotReceiveTimeout time is for example purposes only. This will make the example running more
                     // reliable on non-realtime systems. Use with caution in productive applications.
                     // Murilo: This will run on a realtime system, so I've removed it, i.e., it defaults to 20ms
                     // The target joint positions is obtained from the thread-safe object
-                    bool ret = ur_driver->writeJointCommand(ur_joint_positions_manager->get_target_joint_positions(), comm::ControlMode::MODE_SERVOJ);
+                    bool ret = ur_driver->writeJointCommand(ur_joint_information_manager->get_target_joint_positions(), comm::ControlMode::MODE_SERVOJ);
                     if (!ret)
                     {
                         std::string error_msg = "Could not send joint command. Is the robot in remote control?";
