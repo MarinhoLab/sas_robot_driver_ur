@@ -145,24 +145,6 @@ unset(RCLCPP_LOCAL_BINARY_NAME)
 # CPP Binary Block [END] #
 ##########################
 
-# According to https://github.com/SmartArmStack/sas_robot_driver/blob/ros2/CMakeLists.txt
-##### LAUNCH FILES #####
-
-install(DIRECTORY
-  launch
-  DESTINATION share/${PROJECT_NAME}/
-)
-
-##END## LAUNCH FILES #####
-
-# According to https://github.com/SmartArmStack/sas_datalogger/blob/78ac681f9cb049c5b9715d215f163565f16b5cdc/CMakeLists.txt
-##### PYTHON EXECUTABLES #####
-install(PROGRAMS
-  scripts/joint_interface_example.py
-  DESTINATION lib/${PROJECT_NAME}
-)
-##END## PYTHON EXECUTABLES #####
-
 # According to this file, this is the first time I've attempted this
 ##### Relevant Resource Files #####
 install(FILES
