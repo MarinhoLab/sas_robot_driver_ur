@@ -86,7 +86,7 @@ int main(int argc, char** argv)
         RCLCPP_INFO_STREAM_ONCE(node->get_logger(), "::Parameters OK.");
 
 
-        RCLCPP_INFO_STREAM_ONCE(node->get_logger(), "::Instantiating RobotDriverKuka.");
+        RCLCPP_INFO_STREAM_ONCE(node->get_logger(), "::Instantiating RobotDriverUR.");
         auto robot_driver_ur = std::make_shared<sas::RobotDriverUR>(configuration,
                                                                         &kill_this_process);
 
