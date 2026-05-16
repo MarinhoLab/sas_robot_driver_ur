@@ -85,7 +85,7 @@ ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
     sas_core::sas_core
-    Eigen3::Eigen3
+    Eigen3::Eigen
     )
 
 install(
