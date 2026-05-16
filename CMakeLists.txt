@@ -86,11 +86,11 @@ target_link_libraries(${PROJECT_NAME}
     PUBLIC
     sas_core::sas_core
     Eigen3::Eigen3
+    )
 
 install(
     DIRECTORY include/
     DESTINATION include
-
     )
 
 install(
