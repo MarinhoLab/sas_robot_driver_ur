@@ -1,16 +1,24 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.20)
 project(sas_robot_driver_ur)
+
+# Default to C++20
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 20)
+endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-# find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 find_package(sas_core REQUIRED)
 find_package(sas_common REQUIRED)
+find_package(sas_msgs REQUIRED)
+find_package(sas_conversions REQUIRED)
 find_package(sas_robot_driver REQUIRED)
 
 ####################################
@@ -61,12 +69,6 @@ add_library(${PROJECT_NAME} SHARED
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ur/Universal_Robots_Client_Library/src/comm/tcp_socket.cpp>
     )
 
-ament_target_dependencies(${PROJECT_NAME}
-    sas_core
-    Eigen3
-
-    )
-
 target_include_directories(${PROJECT_NAME}
     PUBLIC
     $<INSTALL_INTERFACE:include>)
@@ -79,12 +81,11 @@ target_include_directories(${PROJECT_NAME}
     )
 
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
-ament_export_dependencies(
-    Eigen3
-    sas_core
 
-
-    )
+target_link_libraries(${PROJECT_NAME}
+    PUBLIC
+    sas_core::sas_core
+    Eigen3::Eigen3
 
 install(
     DIRECTORY include/
@@ -118,17 +119,13 @@ add_executable(${RCLCPP_LOCAL_BINARY_NAME}
 
     )
 
-ament_target_dependencies(${RCLCPP_LOCAL_BINARY_NAME}
-    rclcpp
-    sas_common
-    sas_core
-    sas_robot_driver
-
-)
-
 target_link_libraries(${RCLCPP_LOCAL_BINARY_NAME}
+    PRIVATE
     ${PROJECT_NAME}
-
+    rclcpp::rclcpp
+    sas_common::sas_common
+    sas_core::sas_core
+    sas_robot_driver::sas_robot_driver
     )
 
 target_include_directories(${RCLCPP_LOCAL_BINARY_NAME} PUBLIC
@@ -161,17 +158,5 @@ install(DIRECTORY
   DESTINATION share/${PROJECT_NAME}/
 )
 ##END## Robot config files #####
-
-if(BUILD_TESTING)
-    find_package(ament_lint_auto REQUIRED)
-    # the following line skips the linter which checks for copyrights
-    # comment the line when a copyright and license is added to all source files
-    set(ament_cmake_copyright_FOUND TRUE)
-    # the following line skips cpplint (only works in a git repo)
-    # comment the line when this package is in a git repo and when
-    # a copyright and license is added to all source files
-    set(ament_cmake_cpplint_FOUND TRUE)
-    ament_lint_auto_find_test_dependencies()
-endif()
 
 ament_package()    
