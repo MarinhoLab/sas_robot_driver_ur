@@ -14,9 +14,14 @@ def generate_launch_description():
     # const std::string OUTPUT_RECIPE = "examples/resources/rtde_output_recipe.txt";
     # const std::string INPUT_RECIPE = "examples/resources/rtde_input_recipe.txt";
     # const std::string CALIBRATION_CHECKSUM = "calib_12788084448423163542";
+    name = LaunchConfiguration('name')
     ip = LaunchConfiguration('ip')
 
     return LaunchDescription([
+        DeclareLaunchArgument(
+            'name',
+            default_value='kuka_1'
+        ),
         DeclareLaunchArgument(
             'ip',
             default_value='192.170.10.22'
@@ -26,7 +31,7 @@ def generate_launch_description():
             emulate_tty=True,
             package='sas_robot_driver_ur',
             executable='sas_robot_driver_ur_node',
-            name='ur_1',
+            name=name,
             parameters=[{
                 "ip": ip,
                 "script_file": os.path.join(get_package_share_directory("sas_robot_driver_ur"),
