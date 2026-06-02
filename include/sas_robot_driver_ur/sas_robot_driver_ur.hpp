@@ -33,8 +33,6 @@ using namespace Eigen;
 
 namespace sas
 {
-//Declared internally
-class DriverBcap;
 
 struct RobotDriverURConfiguration
 {

@@ -11,4 +11,4 @@ PACKAGE_SHARE_PATH=$(ros2 pkg prefix sas_robot_driver_ur --share)
 
 echo "$PACKAGE_SHARE_PATH"
 tree "$PACKAGE_SHARE_PATH"
-cat robots/ur3e.json
+cat "$PACKAGE_SHARE_PATH"/robots/ur3e.json
