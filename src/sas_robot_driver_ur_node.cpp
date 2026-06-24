@@ -69,6 +69,8 @@ int main(int argc, char** argv)
         sas::get_ros_parameter(node,"input_recipe",configuration.input_recipe);
         sas::get_ros_parameter(node,"calibration_checksum",configuration.calibration_checksum);
 
+        sas::get_ros_optional_parameter(node,"turn_robot_off_on_connect",configuration.turn_robot_off_on_connect,true);
+
         //std::vector<double> joint_limits_min{-360.0, -360.0, -360.0, -360.0, -360.0, -720.0};
         //std::vector<double> joint_limits_max{360.0, 360.0, 360.0, 360.0, 360.0, 720.0};
         std::vector<double> joint_limits_min;

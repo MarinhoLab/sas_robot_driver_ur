@@ -112,8 +112,11 @@ void RobotDriverUR::connect()
         throw std::runtime_error("Could not send stop program command");
 
     // Power it off
-    if (!impl_->dashboard_client_->commandPowerOff())
-        throw std::runtime_error("Could not send Power off command");
+    if (configuration_.turn_robot_off_on_connect)
+    {
+        if (!impl_->dashboard_client_->commandPowerOff())
+            throw std::runtime_error("Could not send Power off command");
+    }
 }
 
 
