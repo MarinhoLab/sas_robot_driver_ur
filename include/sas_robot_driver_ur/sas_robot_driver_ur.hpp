@@ -49,6 +49,8 @@ struct RobotDriverURConfiguration
     std::string input_recipe;
     std::string calibration_checksum;
     std::tuple<VectorXd,VectorXd> joint_limits;
+
+    bool turn_robot_off_on_connect = true;
 };
 
 class RobotDriverUR: public RobotDriver
