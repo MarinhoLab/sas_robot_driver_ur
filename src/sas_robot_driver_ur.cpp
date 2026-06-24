@@ -123,7 +123,11 @@ void RobotDriverUR::connect()
 void RobotDriverUR::initialize()
 {
     // Check if it needs to be powered on
-    if (impl_->dashboard_client_->commandGetOperationalMode("IDLE"))
+    std::string current_mode = std::string("NONE");
+    if(!impl_->dashboard_client_->commandGetOperationalMode(current_mode))
+        throw std::runtime_error("Could not get operational mode");
+
+    if (current_mode == "POWER_OFF" || current_mode == "IDLE")
     {
         // Power it on
         if (!impl_->dashboard_client_->commandPowerOn())
