@@ -122,13 +122,17 @@ void RobotDriverUR::connect()
 
 void RobotDriverUR::initialize()
 {
-    // Power it on
-    if (!impl_->dashboard_client_->commandPowerOn())
-        throw std::runtime_error("Could not send Power on command");
+    // Check if it needs to be powered on
+    if (impl_->dashboard_client_->commandGetOperationalMode("IDLE"))
+    {
+        // Power it on
+        if (!impl_->dashboard_client_->commandPowerOn())
+            throw std::runtime_error("Could not send Power on command");
 
-    // Release the brakes
-    if (!impl_->dashboard_client_->commandBrakeRelease())
-        throw std::runtime_error("Could not send BrakeRelease command");
+        // Release the brakes
+        if (!impl_->dashboard_client_->commandBrakeRelease())
+            throw std::runtime_error("Could not send BrakeRelease command");
+    }
 
     // Now the robot is ready to receive a program
     std::unique_ptr<urcl::ToolCommSetup> tool_comm_setup;
