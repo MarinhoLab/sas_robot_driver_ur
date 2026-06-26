@@ -122,21 +122,23 @@ void RobotDriverUR::connect()
 
 void RobotDriverUR::initialize()
 {
-    // Check if it needs to be powered on
-    std::string current_mode = std::string("NONE");
-    if(!impl_->dashboard_client_->commandGetOperationalMode(current_mode))
+    std::string current_operation_mode = std::string("NONE");
+    if(!impl_->dashboard_client_->commandGetOperationalMode(current_operation_mode))
         throw std::runtime_error("Could not get operational mode");
+    std::cout << "Current operational mode: " << current_operation_mode << std::endl;
 
-    if (current_mode == "POWER_OFF" || current_mode == "IDLE")
-    {
-        // Power it on
-        if (!impl_->dashboard_client_->commandPowerOn())
-            throw std::runtime_error("Could not send Power on command");
+    std::string current_robot_mode = std::string("NONE");
+    if(!impl_->dashboard_client_->commandRobotMode(current_robot_mode))
+        throw std::runtime_error("Could not get robot mode");
+    std::cout << "Current robot mode: " << current_robot_mode << std::endl;
 
-        // Release the brakes
-        if (!impl_->dashboard_client_->commandBrakeRelease())
-            throw std::runtime_error("Could not send BrakeRelease command");
-    }
+    // Power it on
+    if (!impl_->dashboard_client_->commandPowerOn())
+        throw std::runtime_error("Could not send Power on command");
+
+    // Release the brakes
+    if (!impl_->dashboard_client_->commandBrakeRelease())
+        throw std::runtime_error("Could not send BrakeRelease command");
 
     // Now the robot is ready to receive a program
     std::unique_ptr<urcl::ToolCommSetup> tool_comm_setup;
