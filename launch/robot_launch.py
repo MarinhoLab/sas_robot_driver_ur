@@ -16,6 +16,8 @@ def generate_launch_description():
     # const std::string CALIBRATION_CHECKSUM = "calib_12788084448423163542";
     name = LaunchConfiguration('name')
     ip = LaunchConfiguration('ip')
+    turn_robot_off_on_connect = LaunchConfiguration('turn_robot_off_on_connect')
+    turn_robot_off_on_disconnect = LaunchConfiguration('turn_robot_off_on_disconnect')
 
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -25,6 +27,14 @@ def generate_launch_description():
         DeclareLaunchArgument(
             'ip',
             default_value='192.170.10.22'
+        ),
+        DeclareLaunchArgument(
+            'turn_robot_off_on_connect',
+            default_value='True'
+        ),
+        DeclareLaunchArgument(
+            'turn_robot_off_on_disconnect',
+            default_value='True'
         ),
         Node(
             output='screen',
@@ -43,7 +53,9 @@ def generate_launch_description():
                 "calibration_checksum": "calib_12788084448423163542",
                 "joint_limits_min": [-360.0, -360.0, -360.0, -360.0, -360.0, -720.0],  # The last joint has no limit
                 "joint_limits_max": [360.0, 360.0, 360.0, 360.0, 360.0, 720.0],  # The last joint has no limit
-                "thread_sampling_time_sec": 0.002 # Robot thread is at 500 Hz
+                "thread_sampling_time_sec": 0.002, # Robot thread is at 500 Hz,
+                "turn_robot_off_on_connect": turn_robot_off_on_connect,
+                "turn_robot_off_on_disconnect": turn_robot_off_on_disconnect
             }]
         ),
 

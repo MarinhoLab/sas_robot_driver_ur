@@ -1,0 +1,21 @@
+services:
+  sas_robot_driver_ur:
+    build: .
+    stop_signal: SIGINT
+    stop_grace_period: 1m
+    network_mode: "host" # Reverse connection with UR robot
+    environment:
+      - ROS_DOMAIN_ID
+    cap_add:
+      - SYS_NICE # PREEMPT_RT
+    ulimits:
+      rtprio: 99 # PREEMPT_RT
+      rttime: -1 # PREEMPT_RT
+    volumes:
+      - ../../sas_robot_driver_ur:/root/sas_robot_driver_ur_devel/src/sas_robot_driver_ur
+    command: /bin/bash -c "
+      cd /root/sas_robot_driver_ur_devel/src/sas_robot_driver_ur/docker
+      && chmod +x test_robot.sh
+      && ./test_robot.sh
+      && source /root/sas_robot_driver_ur_devel/install/setup.bash
+      && ros2 launch sas_robot_driver_ur robot_launch.py ip:=192.168.0.5 turn_robot_off_on_connect:=False turn_robot_off_on_disconnect:=False"
