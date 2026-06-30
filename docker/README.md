@@ -2,7 +2,7 @@
 docker compose -f compose_extract_calibration.yml up --build
 ```
 
-DH parameters are output as part of the print to the screen. For instance
+DH parameters are output as part of the print to the screen. For instance, as shown below.
 
 ```yaml
 checksum: [2838313744 2836074114 872220810 2831815457 2832813873 2831463901 ]
@@ -11,3 +11,8 @@ dh_a: [-0.000127253060419519 -0.23474883894576 -0.105623669090592 5.800982954929
 dh_d: [0.151872354245038 -44.3658624648315 120.257950804874 -75.761444361747 0.0853444740085875 0.0919415848135132 ]
 dh_alpha: [1.57050858113481 0.00145929529361599 0.00244362635557041 1.57032865911141 -1.5723464771231 0 ]
 ```
+
+However, those parameters have limited use, given the exaggerated parameters.
+
+https://docs.universal-robots.com/Universal_Robots_ROS2_Documentation/doc/ur_robot_driver/ur_calibration/doc/algorithm.html
+

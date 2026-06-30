@@ -172,4 +172,11 @@ install(DIRECTORY
 
 ##END## LAUNCH FILES #####
 
+##### Calibration files #####
+install(DIRECTORY
+  calibration
+  DESTINATION share/${PROJECT_NAME}/
+)
+##END## Calibration files #####
+
 ament_package()    
