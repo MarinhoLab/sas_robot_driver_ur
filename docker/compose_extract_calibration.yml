@@ -1,0 +1,18 @@
+services:
+  ur_calibration_extractor:
+    container_name: ur_calibration_extractor
+    build:
+      dockerfile: Dockerfile_extract_calibration
+    stop_signal: SIGINT
+    stop_grace_period: 1m
+    network_mode: "host" # Reverse connection with UR robot
+    environment:
+      - ROS_DOMAIN_ID
+    cap_add:
+      - SYS_NICE # PREEMPT_RT
+    ulimits:
+      rtprio: 99 # PREEMPT_RT
+      rttime: -1 # PREEMPT_RT
+    command: /bin/bash -c "
+      ros2 launch ur_calibration calibration_correction.launch.py robot_ip:=192.168.0.5 target_filename:="$${HOME}/my_robot_calibration.yaml"
+      && cat "$${HOME}/my_robot_calibration.yaml""
