@@ -14,5 +14,5 @@ services:
       rtprio: 99 # PREEMPT_RT
       rttime: -1 # PREEMPT_RT
     command: /bin/bash -c "
-      ros2 launch ur_calibration calibration_correction.launch.py robot_ip:=192.168.0.5 target_filename:="$${HOME}/my_robot_calibration.yaml"
-      && cat "$${HOME}/my_robot_calibration.yaml""
+      ros2 launch ur_calibration calibration_correction.launch.py robot_ip:=192.168.0.5 target_filename:="$${HOME}/calib_5429419257672390452.yaml"
+      && cat "$${HOME}/calib_5429419257672390452.yaml""
