@@ -18,4 +18,4 @@ services:
       && chmod +x test_robot.sh
       && ./test_robot.sh
       && source /root/sas_robot_driver_ur_devel/install/setup.bash
-      && ros2 launch sas_robot_driver_ur robot_launch.py ip:=192.168.0.5 turn_robot_off_on_connect:=False turn_robot_off_on_disconnect:=False"
+      && ros2 launch sas_robot_driver_ur robot_launch.py ip:=192.168.0.5 turn_robot_off_on_connect:=False turn_robot_off_on_disconnect:=False calibration_checksum:=calib_5429419257672390452"

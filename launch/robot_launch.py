@@ -18,6 +18,7 @@ def generate_launch_description():
     ip = LaunchConfiguration('ip')
     turn_robot_off_on_connect = LaunchConfiguration('turn_robot_off_on_connect')
     turn_robot_off_on_disconnect = LaunchConfiguration('turn_robot_off_on_disconnect')
+    calibration_checksum = LaunchConfiguration('calibration_checksum')
 
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -36,6 +37,10 @@ def generate_launch_description():
             'turn_robot_off_on_disconnect',
             default_value='True'
         ),
+        DeclareLaunchArgument(
+            'calibration_checksum',
+            default_value='calib_12788084448423163542'
+        ),
         Node(
             output='screen',
             emulate_tty=True,
@@ -50,7 +55,7 @@ def generate_launch_description():
                                               "rtde_output_recipe.txt"),
                 "input_recipe": os.path.join(get_package_share_directory("sas_robot_driver_ur"),
                                              "rtde_input_recipe.txt"),
-                "calibration_checksum": "calib_12788084448423163542",
+                "calibration_checksum": calibration_checksum,
                 "joint_limits_min": [-360.0, -360.0, -360.0, -360.0, -360.0, -720.0],  # The last joint has no limit
                 "joint_limits_max": [360.0, 360.0, 360.0, 360.0, 360.0, 720.0],  # The last joint has no limit
                 "thread_sampling_time_sec": 0.002, # Robot thread is at 500 Hz,
