@@ -122,26 +122,27 @@ void RobotDriverUR::connect()
 
 void RobotDriverUR::initialize()
 {
-    std::string current_operation_mode = std::string("NONE");
-    if(!impl_->dashboard_client_->commandGetOperationalMode(current_operation_mode))
-        throw std::runtime_error("Could not get operational mode");
-    std::cout << "Current operational mode: " << current_operation_mode << std::endl;
-
     std::string current_robot_mode = std::string("NONE");
     if(!impl_->dashboard_client_->commandRobotMode(current_robot_mode))
         throw std::runtime_error("Could not get robot mode");
     std::cout << "Current robot mode: " << current_robot_mode << std::endl;
 
     // Power it on
-    if (current_robot_mode == "POWER_OFF")
+    if (current_robot_mode == "Robotmode: POWER_OFF")
     {
+        std::cout << "Powering robot on..." << std::endl;
         if (!impl_->dashboard_client_->commandPowerOn())
             throw std::runtime_error("Could not send Power on command");
     }
 
+    // Get the mode once more
+    impl_->dashboard_client_->commandRobotMode(current_robot_mode);
+    std::cout << "Current robot mode: " << current_robot_mode << std::endl;
+
     // Release the brakes
-    if (current_robot_mode == "IDLE")
+    if (current_robot_mode == "Robotmode: IDLE")
     {
+        std::cout << "Releasing breaks..." << std::endl;
         if (!impl_->dashboard_client_->commandBrakeRelease())
             throw std::runtime_error("Could not send BrakeRelease command");
     }
