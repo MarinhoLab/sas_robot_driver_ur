@@ -51,6 +51,7 @@ struct RobotDriverURConfiguration
     std::tuple<VectorXd,VectorXd> joint_limits;
 
     bool turn_robot_off_on_connect = true;
+    bool turn_robot_off_on_disconnect = true;
 };
 
 class RobotDriverUR: public RobotDriver

@@ -182,7 +182,10 @@ void RobotDriverUR::deinitialize()
     // Stop program, if there is one running
     impl_->dashboard_client_->commandStop();
     // Power it off
-    impl_->dashboard_client_->commandPowerOff();
+    if(configuration_.turn_robot_off_on_disconnect)
+    {
+        impl_->dashboard_client_->commandPowerOff();
+    }
 
     //To force the thread to shutdown if it hasn't already done so
     *break_loops_ = true;
