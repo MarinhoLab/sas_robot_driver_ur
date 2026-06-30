@@ -1,0 +1,9 @@
+FROM osrf/ros:rolling-desktop-full-noble
+LABEL authors="murilomarinho"
+SHELL ["/bin/bash", "-c"]
+ENV BASH_ENV="/etc/bash_env"
+
+RUN apt-get update
+RUN apt-get upgrade -y
+RUN apt-get install -y ros-rolling-ur-*
+RUN apt-get install -y ros-rolling-rmw-fastrtps-cpp
