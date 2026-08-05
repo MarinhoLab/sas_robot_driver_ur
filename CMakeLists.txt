@@ -12,6 +12,7 @@ find_package(rclcpp REQUIRED)
 find_package(sas_core REQUIRED)
 find_package(sas_common REQUIRED)
 find_package(sas_robot_driver REQUIRED)
+find_package(sas_force_sensor REQUIRED)
 
 ####################################
 # CPP Shared Library Block [BEGIN] #
@@ -123,6 +124,7 @@ ament_target_dependencies(${RCLCPP_LOCAL_BINARY_NAME}
     sas_common
     sas_core
     sas_robot_driver
+    sas_force_sensor
 
 )
 
