@@ -100,6 +100,21 @@ VectorXd RobotDriverUR::get_joint_velocities()
     return sas::std_vector_double_to_vectorxd(std_vector);
 }
 
+VectorXd RobotDriverUR::get_tcp_force()
+{
+    //The UR libraries use std::array and it's more efficient to keep conversion functions out of the realtime loop, hence, here.
+    auto std_array = impl_->ur_joint_information_manager_->get_current_tcp_force();
+    std::vector<double> std_vector(std_array.begin(), std_array.begin()+3);
+    return sas::std_vector_double_to_vectorxd(std_vector);
+}
+
+VectorXd RobotDriverUR::get_tcp_torque()
+{
+    auto std_array = impl_->ur_joint_information_manager_->get_current_tcp_force();
+    std::vector<double> std_vector(std_array.begin()+3, std_array.end());
+    return sas::std_vector_double_to_vectorxd(std_vector);
+}
+
 void RobotDriverUR::connect()
 {
     // Making the robot ready for the program by:
