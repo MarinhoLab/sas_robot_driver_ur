@@ -77,6 +77,18 @@ public:
     VectorXd get_joint_velocities() override;
     //void set_target_joint_velocities(const VectorXd& desired_joint_velocities_rads) override; //Not possible (yet?)
 
+    /**
+     * @brief Get the current force estimated at the TCP by the robot controller.
+     * @return Vector3d [Fx, Fy, Fz], given in the robot's base frame.
+     */
+    VectorXd get_tcp_force();
+
+    /**
+     * @brief Get the current torque (moment) estimated at the TCP by the robot controller.
+     * @return Vector3d [Mx, My, Mz], given in the robot's base frame.
+     */
+    VectorXd get_tcp_torque();
+
     void connect() override;
     void disconnect() override;
 

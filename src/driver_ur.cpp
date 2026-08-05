@@ -82,9 +82,20 @@ int communication_thread_loop(std::shared_ptr<UrDriver> ur_driver,
                     throw std::runtime_error(error_msg);
                 }
 
+                vector6d_t tcp_force;
+                // Read the generalized force/torque at the TCP, as estimated by the robot, from robot data.
+                // This is a 6d vector in the shape [Fx, Fy, Fz, Mx, My, Mz], given in the base frame.
+                if (!data_pkg->getData("actual_TCP_force", tcp_force))
+                {
+                    // This throwing should never happen unless misconfigured
+                    std::string error_msg = "Did not find 'actual_TCP_force' in data sent from robot. This should not happen!";
+                    throw std::runtime_error(error_msg);
+                }
+
                 // Store in the thread-safe object
                 ur_joint_information_manager->set_current_joint_positions(joint_positions);
                 ur_joint_information_manager->set_current_joint_velocities(joint_velocities);
+                ur_joint_information_manager->set_current_tcp_force(tcp_force);
 
                 // Murilo: We should be sure that valid joint positions are available in the buffer.
                 if(ur_joint_information_manager->is_target_joint_position_valid())

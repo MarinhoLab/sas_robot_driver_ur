@@ -41,6 +41,10 @@ private:
     bool current_joint_velocity_valid_{false};
     urcl::vector6d_t current_joint_velocities_;
     std::mutex mutex_current_joint_velocities_;
+
+    bool current_tcp_force_valid_{false};
+    urcl::vector6d_t current_tcp_force_;
+    std::mutex mutex_current_tcp_force_;
 public:
     void set_current_joint_positions(const urcl::vector6d_t& joint_positions);
     urcl::vector6d_t get_current_joint_positions();
@@ -50,6 +54,9 @@ public:
 
     void set_current_joint_velocities(const urcl::vector6d_t& joint_positions);
     urcl::vector6d_t get_current_joint_velocities();
+
+    void set_current_tcp_force(const urcl::vector6d_t& tcp_force);
+    urcl::vector6d_t get_current_tcp_force();
 
     bool is_current_joint_position_valid()
     {
@@ -64,6 +71,11 @@ public:
     bool is_current_joint_velocity_valid()
     {
         return current_joint_velocity_valid_;
+    }
+
+    bool is_current_tcp_force_valid()
+    {
+        return current_tcp_force_valid_;
     }
 };
 }
