@@ -27,6 +27,7 @@
 #include <sas_common/sas_common.hpp>
 #include <sas_core/eigen3_std_conversions.hpp>
 #include <sas_robot_driver_ur/sas_robot_driver_ur.hpp>
+#include <sas_force_sensor/sas_force_sensor_server.hpp>
 #include <dqrobotics/utils/DQ_Math.h>
 
 using namespace DQ_robotics;
@@ -92,6 +93,20 @@ int main(int argc, char** argv)
         RCLCPP_INFO_STREAM_ONCE(node->get_logger(), "::Instantiating RobotDriverUR.");
         auto robot_driver_ur = std::make_shared<sas::RobotDriverUR>(configuration,
                                                                         &kill_this_process);
+
+        RCLCPP_INFO_STREAM_ONCE(node->get_logger(), "::Instantiating ForceSensorServer.");
+        sas::ForceSensorServer force_sensor_server(node, robot_driver_ros_configuration.robot_driver_provider_prefix);
+
+        // Reads the TCP force/torque already collected by RobotDriverUR and publishes it through the
+        // ForceSensorServer. This callback is compatible with RobotDriver::set_control_loop_callback(),
+        // i.e. it takes no arguments and returns void, so RobotDriverROS::control_loop() will call it
+        // once per control loop iteration.
+        robot_driver_ur->set_control_loop_callback([robot_driver_ur, &force_sensor_server]()
+        {
+            const DQ force(robot_driver_ur->get_tcp_force());
+            const DQ torque(robot_driver_ur->get_tcp_torque());
+            force_sensor_server.send_force_torque(force, torque);
+        });
 
         RCLCPP_INFO_STREAM_ONCE(node->get_logger(), "::Instantiating RobotDriverROS.");
         sas::RobotDriverROS robot_driver_ros(node,
