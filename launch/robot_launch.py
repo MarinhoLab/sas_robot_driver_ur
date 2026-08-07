@@ -23,7 +23,7 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument(
             'name',
-            default_value='kuka_1'
+            default_value='ur_1'
         ),
         DeclareLaunchArgument(
             'ip',
