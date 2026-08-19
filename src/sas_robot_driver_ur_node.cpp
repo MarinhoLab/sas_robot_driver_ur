@@ -51,7 +51,7 @@ int main(int argc, char** argv)
 
     rclcpp::init(argc,argv,rclcpp::InitOptions(),rclcpp::SignalHandlerOptions::None);
 
-    auto node = std::make_shared<rclcpp::Node>("sas_robot_driver_kuka");
+    auto node = std::make_shared<rclcpp::Node>("sas_robot_driver_ur");
 
     try
     {
