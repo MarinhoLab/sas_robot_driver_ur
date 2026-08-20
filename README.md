@@ -8,10 +8,6 @@
 
 ## ROS 2 Nodes & Parameters
 
-This repository defines a single ROS 2 node. The format below scales to multiple nodes — one section per node, each with its own parameter table.
-
----
-
 ### Node: `sas_robot_driver_ur_node`
 
 | Property | Value |
@@ -39,4 +35,3 @@ This repository defines a single ROS 2 node. The format below scales to multiple
 - **Mandatory** params are read with `sas::get_ros_parameter(...)` — if missing, the node throws and fails to start.
 - **Optional** params are read with `sas::get_ros_optional_parameter(..., <default>)` — they carry in-code defaults.
 
-> **Caveat:** `RobotDriverROS` (from `sas_robot_driver`) and `ForceSensorServer` (from `sas_force_sensor`) are external packages not in this repository. Any parameters *they* declare on this same node can't be verified from this codebase — each table above covers only what that node's own code reads.
