@@ -1,0 +1,12 @@
+ur3e:
+  ros__parameters:
+    ip: '192.168.0.5'
+    script_file: '/opt/ros/jazzy/share/sas_robot_driver_ur/external_control.urscript'
+    output_recipe: '/opt/ros/jazzy/share/sas_robot_driver_ur/rtde_output_recipe.txt'
+    input_recipe: '/opt/ros/jazzy/share/sas_robot_driver_ur/rtde_input_recipe.txt'
+    calibration_checksum: 'calib_12788084448423163542'
+    joint_limits_min: [-360.0, -360.0, -360.0, -360.0, -360.0, -720.0]  # The last joint has no limit
+    joint_limits_max: [360.0, 360.0, 360.0, 360.0, 360.0, 720.0]  # The last joint has no limit
+    thread_sampling_time_sec: 0.002  # Robot thread is at 500 Hz
+    turn_robot_off_on_connect: false
+    turn_robot_off_on_disconnect: false
