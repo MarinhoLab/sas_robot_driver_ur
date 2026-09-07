@@ -1,6 +1,8 @@
 services:
   sas_robot_driver_ur:
-    build: .
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
     stop_signal: SIGINT
     stop_grace_period: 1m
     network_mode: "host" # Reverse connection with UR robot
@@ -11,8 +13,6 @@ services:
     ulimits:
       rtprio: 99 # PREEMPT_RT
       rttime: -1 # PREEMPT_RT
-    volumes:
-      - ../../sas_robot_driver_ur:/root/sas_robot_driver_ur_devel/src/sas_robot_driver_ur
     command: /bin/bash -c "
       cd /root/sas_robot_driver_ur_devel/src/sas_robot_driver_ur/docker
       && chmod +x test_robot.sh
