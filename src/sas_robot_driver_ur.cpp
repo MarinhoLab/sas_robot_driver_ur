@@ -71,7 +71,7 @@ RobotDriverUR::~RobotDriverUR()
 
 }
 
-VectorXd RobotDriverUR::get_joint_positions()
+Eigen::VectorXd RobotDriverUR::get_joint_positions()
 {
     //The UR libraries use std::array and it's more efficient to keep conversion functions out of the realtime loop, hence, here.
     auto std_array = impl_->ur_joint_information_manager_->get_current_joint_positions();
@@ -79,7 +79,7 @@ VectorXd RobotDriverUR::get_joint_positions()
     return sas::std_vector_double_to_vectorxd(std_vector);
 }
 
-void RobotDriverUR::set_target_joint_positions(const VectorXd &desired_joint_positions_rad)
+void RobotDriverUR::set_target_joint_positions(const Eigen::VectorXd &desired_joint_positions_rad)
 {
     if(desired_joint_positions_rad.size() != 6)
         throw std::runtime_error("Incorrect vector size in RobotDriverUR::set_target_joint_positions");
@@ -93,14 +93,14 @@ void RobotDriverUR::set_target_joint_positions(const VectorXd &desired_joint_pos
     impl_->ur_joint_information_manager_->set_target_joint_positions(std_array);
 }
 
-VectorXd RobotDriverUR::get_joint_velocities()
+Eigen::VectorXd RobotDriverUR::get_joint_velocities()
 {
     auto std_array = impl_->ur_joint_information_manager_->get_current_joint_velocities();
     std::vector<double> std_vector(std_array.begin(), std_array.end());
     return sas::std_vector_double_to_vectorxd(std_vector);
 }
 
-VectorXd RobotDriverUR::get_tcp_force()
+Eigen::VectorXd RobotDriverUR::get_tcp_force()
 {
     //The UR libraries use std::array and it's more efficient to keep conversion functions out of the realtime loop, hence, here.
     auto std_array = impl_->ur_joint_information_manager_->get_current_tcp_force();
@@ -108,7 +108,7 @@ VectorXd RobotDriverUR::get_tcp_force()
     return sas::std_vector_double_to_vectorxd(std_vector);
 }
 
-VectorXd RobotDriverUR::get_tcp_torque()
+Eigen::VectorXd RobotDriverUR::get_tcp_torque()
 {
     auto std_array = impl_->ur_joint_information_manager_->get_current_tcp_force();
     std::vector<double> std_vector(std_array.begin()+3, std_array.end());

@@ -29,7 +29,6 @@
 
 #include <sas_core/sas_robot_driver.hpp>
 
-using namespace Eigen;
 
 namespace sas
 {
@@ -48,7 +47,7 @@ struct RobotDriverURConfiguration
     std::string output_recipe;
     std::string input_recipe;
     std::string calibration_checksum;
-    std::tuple<VectorXd,VectorXd> joint_limits;
+    std::tuple<Eigen::VectorXd,Eigen::VectorXd> joint_limits;
 
     bool turn_robot_off_on_connect = true;
     bool turn_robot_off_on_disconnect = true;
@@ -71,23 +70,23 @@ public:
 
     RobotDriverUR(const RobotDriverURConfiguration &configuration, std::atomic_bool* break_loops);
 
-    VectorXd get_joint_positions() override;
-    void set_target_joint_positions(const VectorXd& desired_joint_positions_rad) override;
+    Eigen::VectorXd get_joint_positions() override;
+    void set_target_joint_positions(const Eigen::VectorXd& desired_joint_positions_rad) override;
 
-    VectorXd get_joint_velocities() override;
-    //void set_target_joint_velocities(const VectorXd& desired_joint_velocities_rads) override; //Not possible (yet?)
+    Eigen::VectorXd get_joint_velocities() override;
+    //void set_target_joint_velocities(const Eigen::VectorXd& desired_joint_velocities_rads) override; //Not possible (yet?)
 
     /**
      * @brief Get the current force estimated at the TCP by the robot controller.
      * @return Vector3d [Fx, Fy, Fz], given in the robot's base frame.
      */
-    VectorXd get_tcp_force();
+    Eigen::VectorXd get_tcp_force();
 
     /**
      * @brief Get the current torque (moment) estimated at the TCP by the robot controller.
      * @return Vector3d [Mx, My, Mz], given in the robot's base frame.
      */
-    VectorXd get_tcp_torque();
+    Eigen::VectorXd get_tcp_torque();
 
     void connect() override;
     void disconnect() override;
