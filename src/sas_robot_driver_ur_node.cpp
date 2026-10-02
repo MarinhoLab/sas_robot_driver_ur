@@ -21,6 +21,12 @@
 #   Author: Murilo M. Marinho, email: murilomarinho@ieee.org
 #   Based on sas_robot_driver_kuka
 #
+# ################################################################
+# Contributors:
+#
+#   1. Erwin Lopez (erwin.lopez@manchester.ac.uk)
+#      Added functionality to control tool gpio
+#
 # ################################################################*/
 #include <rclcpp/rclcpp.hpp>
 #include <sas_robot_driver/sas_robot_driver_ros.hpp>
@@ -72,6 +78,7 @@ int main(int argc, char** argv)
 
         sas::get_ros_optional_parameter(node,"turn_robot_off_on_connect",configuration.turn_robot_off_on_connect,true);
         sas::get_ros_optional_parameter(node,"turn_robot_off_on_disconnect",configuration.turn_robot_off_on_disconnect,true);
+        sas::get_ros_optional_parameter(node,"tool_gpio_enable",configuration.tool_gpio_enable,false);
 
         //std::vector<double> joint_limits_min{-360.0, -360.0, -360.0, -360.0, -360.0, -720.0};
         //std::vector<double> joint_limits_max{360.0, 360.0, 360.0, 360.0, 360.0, 720.0};
@@ -86,6 +93,7 @@ int main(int argc, char** argv)
         //robot_driver_ros_configuration.thread_sampling_time_sec = 0.001;
         sas::get_ros_parameter(node,"thread_sampling_time_sec",robot_driver_ros_configuration.thread_sampling_time_sec);
         robot_driver_ros_configuration.robot_driver_provider_prefix = node->get_name();
+        robot_driver_ros_configuration.robot_tool_gpio_enable = configuration.tool_gpio_enable;
 
         RCLCPP_INFO_STREAM_ONCE(node->get_logger(), "::Parameters OK.");
 

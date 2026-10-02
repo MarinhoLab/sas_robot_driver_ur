@@ -21,6 +21,12 @@
 #   Author: Murilo M. Marinho, email: murilomarinho@ieee.org
 #   Based on sas_robot_driver_kuka.cpp
 #
+# ################################################################
+# Contributors:
+#
+#   1. Erwin Lopez (erwin.lopez@manchester.ac.uk)
+#      Added functionality to control tool gpio
+#
 # ################################################################*/
 
 
@@ -62,7 +68,7 @@ RobotDriverUR::RobotDriverUR(const RobotDriverURConfiguration& configuration, st
 {
     impl_ = std::make_unique<RobotDriverUR::Impl>();
     impl_->dashboard_client_ = std::make_unique<urcl::DashboardClient>(configuration_.ip);
-    impl_->ur_joint_information_manager_ = std::make_shared<sas::URJointInformationManager>();
+    impl_->ur_joint_information_manager_ = std::make_shared<sas::URJointInformationManager>(configuration_.tool_gpio_enable);
     joint_limits_ = configuration.joint_limits;
 }
 
@@ -113,6 +119,20 @@ Eigen::VectorXd RobotDriverUR::get_tcp_torque()
     auto std_array = impl_->ur_joint_information_manager_->get_current_tcp_force();
     std::vector<double> std_vector(std_array.begin()+3, std_array.end());
     return sas::std_vector_double_to_vectorxd(std_vector);
+}
+
+std::array<bool, 2> RobotDriverUR::get_tool_gpio()
+{
+    if(!configuration_.tool_gpio_enable)
+        throw std::runtime_error("Tool gpio not enabled [get_tool_gpio]");
+    return impl_->ur_joint_information_manager_->get_current_tool_gpio();
+}
+
+void RobotDriverUR::set_tool_gpio(const std::array<bool, 2>& tool_gpio)
+{
+    if(!configuration_.tool_gpio_enable)
+        throw std::runtime_error("Tool gpio not enabled [set_tool_gpio]");
+    impl_->ur_joint_information_manager_->set_current_tool_gpio(tool_gpio);
 }
 
 void RobotDriverUR::connect()

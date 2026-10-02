@@ -20,9 +20,16 @@
 #
 #   Author: Murilo M. Marinho, email: murilomarinho@ieee.org
 #
+# ################################################################
+# Contributors:
+#
+#   1. Erwin Lopez (erwin.lopez@manchester.ac.uk)
+#      Added functionality to control tool gpio
+#
 # ################################################################*/
 #pragma once
 #include <ur_client_library/types.h>
+#include <array>
 #include <mutex>
 
 namespace sas
@@ -45,7 +52,16 @@ private:
     bool current_tcp_force_valid_{false};
     urcl::vector6d_t current_tcp_force_;
     std::mutex mutex_current_tcp_force_;
+
+    bool tool_gpio_enabled_{false};
+
+    bool current_tool_gpio_valid_{false};
+    bool current_tool_gpio_pending_{false};
+    std::array<bool, 2> current_tool_gpio_{};
+    std::mutex mutex_current_tool_gpio_;
 public:
+    URJointInformationManager(bool tool_gpio_enabled);
+
     void set_current_joint_positions(const urcl::vector6d_t& joint_positions);
     urcl::vector6d_t get_current_joint_positions();
 
@@ -57,6 +73,12 @@ public:
 
     void set_current_tcp_force(const urcl::vector6d_t& tcp_force);
     urcl::vector6d_t get_current_tcp_force();
+
+    void set_tool_gpio_enabled(const bool tool_gpio_enabled);
+
+    void set_current_tool_gpio(const std::array<bool, 2>& tool_gpio);
+    std::array<bool, 2> get_current_tool_gpio();
+    bool take_pending_tool_gpio(std::array<bool, 2>& tool_gpio);
 
     bool is_current_joint_position_valid()
     {
@@ -76,6 +98,11 @@ public:
     bool is_current_tcp_force_valid()
     {
         return current_tcp_force_valid_;
+    }
+
+    bool is_tool_gpio_enabled()
+    {
+        return tool_gpio_enabled_;
     }
 };
 }

@@ -30,6 +30,7 @@
 | `thread_sampling_time_sec` | double | **Mandatory** | none — must be provided | Sampling period of the robot control-loop thread (e.g. `0.002` s = 500 Hz) |
 | `turn_robot_off_on_connect` | bool | Optional | `true` | Whether to power the robot off when connecting |
 | `turn_robot_off_on_disconnect` | bool | Optional | `true` | Whether to power the robot off on disconnect |
+| `tool_gpio_enable` | bool | Optional | `false` | Enables control of the tool digital outputs (pins 0 and 1) via `<topic_prefix>/set/tool_gpio` |
 
 **How mandatory/optional is determined in code:**
 - **Mandatory** params are read with `sas::get_ros_parameter(...)` — if missing, the node throws and fails to start.

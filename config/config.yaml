@@ -10,3 +10,4 @@ ur3e:
     thread_sampling_time_sec: 0.002  # Robot thread is at 500 Hz
     turn_robot_off_on_connect: false
     turn_robot_off_on_disconnect: false
+    tool_gpio_enable: false  # Set to true to control the tool digital outputs

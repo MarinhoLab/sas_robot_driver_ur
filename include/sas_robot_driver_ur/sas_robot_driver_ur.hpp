@@ -22,6 +22,12 @@
 #   Author: Murilo M. Marinho, email: murilomarinho@ieee.org
 #   Based on sas_robot_driver_denso.h
 #
+# ################################################################
+# Contributors:
+#
+#   1. Erwin Lopez (erwin.lopez@manchester.ac.uk)
+#      Added functionality to control tool gpio
+#
 # ################################################################*/
 
 #include <atomic>
@@ -51,6 +57,7 @@ struct RobotDriverURConfiguration
 
     bool turn_robot_off_on_connect = true;
     bool turn_robot_off_on_disconnect = true;
+    bool tool_gpio_enable = false;
 };
 
 class RobotDriverUR: public RobotDriver
@@ -87,6 +94,20 @@ public:
      * @return Vector3d [Mx, My, Mz], given in the robot's base frame.
      */
     Eigen::VectorXd get_tcp_torque();
+
+    /**
+     * @brief Get the last commanded tool digital output values.
+     * @note This is the value most recently passed to set_tool_gpio(), not a read-back from the robot.
+     * @return std::array<bool, 2> with the commanded value of tool digital outputs 0 and 1.
+     */
+    std::array<bool, 2> get_tool_gpio() override;
+
+    /**
+     * @brief Command the tool digital outputs.
+     * @note The value is written to the robot over RTDE only when it differs from the previous command.
+     * @param tool_gpio std::array<bool, 2> with the desired value of tool digital outputs 0 and 1.
+     */
+    void set_tool_gpio(const std::array<bool, 2>& tool_gpio) override;
 
     void connect() override;
     void disconnect() override;

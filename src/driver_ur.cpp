@@ -111,6 +111,20 @@ int communication_thread_loop(std::shared_ptr<UrDriver> ur_driver,
                         throw std::runtime_error(error_msg);
                     }
                 }
+
+                // Write the tool digital outputs only when a new value was commanded.
+                std::array<bool, 2> tool_gpio{};
+                if(ur_joint_information_manager->is_tool_gpio_enabled() &&
+                    ur_joint_information_manager->take_pending_tool_gpio(tool_gpio))
+                {
+                    const bool ret_0 = ur_driver->getRTDEWriter().sendToolDigitalOutput(0, std::get<0>(tool_gpio));
+                    const bool ret_1 = ur_driver->getRTDEWriter().sendToolDigitalOutput(1, std::get<1>(tool_gpio));
+                    if(!ret_0 || !ret_1)
+                    {
+                        std::string error_msg = "Could not send tool digital output command. Does the RTDE input recipe include 'tool_digital_output_mask' and 'tool_digital_output'?";
+                        throw std::runtime_error(error_msg);
+                    }
+                }
             }
             else
             {
