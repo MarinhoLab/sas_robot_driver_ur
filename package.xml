@@ -14,7 +14,18 @@
   <depend>sas_common</depend>
   <depend>sas_robot_driver</depend>
   <depend>sas_force_sensor</depend>
+  <depend>eigen</depend>
+  <!-- libzmq is required by the in-tree compiled
+       src/ur/Universal_Robots_Client_Library. -->
+  <depend>libzmq3-dev</depend>
 
+  <exec_depend>ament_index_python</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+
+  <!-- dqrobotics (libdqrobotics, linked in CMakeLists.txt) has no rosdep key;
+       it comes from the DQ Robotics PPA (see
+       https://github.com/marinholab/docker_recipes). -->
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
