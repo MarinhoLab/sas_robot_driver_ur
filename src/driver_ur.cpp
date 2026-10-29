@@ -55,18 +55,18 @@ int communication_thread_loop(std::shared_ptr<UrDriver> ur_driver,
     ur_driver->startRTDECommunication();
 
     try {
+        rtde_interface::DataPackage data_pkg(ur_driver->getRTDEOutputRecipe());
         while (!(*break_loops))
         {
             // Read latest RTDE package. This will block for a hard-coded timeout (see UrDriver), so the
             // robot will effectively be in charge of setting the frequency of this loop.
             // In a real-world application this thread should be scheduled with real-time priority in order
             // to ensure that this is called in time.
-            std::unique_ptr<rtde_interface::DataPackage> data_pkg(ur_driver->getDataPackage());
-            if (data_pkg)
+            if (ur_driver->getDataPackage(data_pkg))
             {
                 vector6d_t joint_positions;
                 // Read current joint positions from robot data
-                if (!data_pkg->getData("actual_q", joint_positions))
+                if (!data_pkg.getData("actual_q", joint_positions))
                 {
                     // This throwing should never happen unless misconfigured
                     std::string error_msg = "Did not find 'actual_q' in data sent from robot. This should not happen!";
@@ -75,7 +75,7 @@ int communication_thread_loop(std::shared_ptr<UrDriver> ur_driver,
 
                 vector6d_t joint_velocities;
                 // Read current joint velocities from robot data
-                if (!data_pkg->getData("actual_qd", joint_velocities))
+                if (!data_pkg.getData("actual_qd", joint_velocities))
                 {
                     // This throwing should never happen unless misconfigured
                     std::string error_msg = "Did not find 'actual_qd' in data sent from robot. This should not happen!";
@@ -85,7 +85,7 @@ int communication_thread_loop(std::shared_ptr<UrDriver> ur_driver,
                 vector6d_t tcp_force;
                 // Read the generalized force/torque at the TCP, as estimated by the robot, from robot data.
                 // This is a 6d vector in the shape [Fx, Fy, Fz, Mx, My, Mz], given in the base frame.
-                if (!data_pkg->getData("actual_TCP_force", tcp_force))
+                if (!data_pkg.getData("actual_TCP_force", tcp_force))
                 {
                     // This throwing should never happen unless misconfigured
                     std::string error_msg = "Did not find 'actual_TCP_force' in data sent from robot. This should not happen!";

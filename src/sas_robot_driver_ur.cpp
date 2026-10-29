@@ -57,7 +57,7 @@ public:
 };
 
 RobotDriverUR::RobotDriverUR(const RobotDriverURConfiguration& configuration, std::atomic_bool* break_loops):
-    RobotDriver(break_loops),
+    RobotDriver(std::make_shared<marinholab::sas::core::ShutdownSignaler>(break_loops)),
     configuration_(configuration)
 {
     impl_ = std::make_unique<RobotDriverUR::Impl>();
@@ -166,16 +166,17 @@ void RobotDriverUR::initialize()
     std::unique_ptr<urcl::ToolCommSetup> tool_comm_setup;
     const bool HEADLESS = true;
 
-    impl_->ur_driver_ = std::make_shared<urcl::UrDriver>(
-        configuration_.ip,
-        configuration_.script_file,
-        configuration_.output_recipe,
-        configuration_.input_recipe,
-        &handleRobotProgramState,
-        HEADLESS,
-        std::move(tool_comm_setup),
-        configuration_.calibration_checksum
-        );
+    urcl::UrDriverConfiguration ur_driver_config;
+    ur_driver_config.robot_ip = configuration_.ip;
+    ur_driver_config.script_file = configuration_.script_file;
+    ur_driver_config.output_recipe_file = configuration_.output_recipe;
+    ur_driver_config.input_recipe_file = configuration_.input_recipe;
+    ur_driver_config.handle_program_state = &handleRobotProgramState;
+    ur_driver_config.headless_mode = HEADLESS;
+    ur_driver_config.tool_comm_setup = std::move(tool_comm_setup);
+    ur_driver_config.calibration_checksum = configuration_.calibration_checksum;
+
+    impl_->ur_driver_ = std::make_shared<urcl::UrDriver>(ur_driver_config);
 
     fri_thread_ = std::thread(communication_thread_loop, impl_->ur_driver_, impl_->ur_joint_information_manager_, break_loops_);
 
