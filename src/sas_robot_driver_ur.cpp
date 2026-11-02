@@ -100,6 +100,15 @@ Eigen::VectorXd RobotDriverUR::get_joint_velocities()
     return sas::std_vector_double_to_vectorxd(std_vector);
 }
 
+Eigen::VectorXd RobotDriverUR::get_joint_torques()
+{
+    if (!impl_->ur_joint_information_manager_->is_current_joint_torque_valid())
+        throw std::runtime_error("No joint torques received yet. Is 'actual_current_as_torque' in the RTDE output recipe and the robot firmware recent enough to provide it?");
+    auto std_array = impl_->ur_joint_information_manager_->get_current_joint_torques();
+    std::vector<double> std_vector(std_array.begin(), std_array.end());
+    return sas::std_vector_double_to_vectorxd(std_vector);
+}
+
 Eigen::VectorXd RobotDriverUR::get_tcp_force()
 {
     //The UR libraries use std::array and it's more efficient to keep conversion functions out of the realtime loop, hence, here.

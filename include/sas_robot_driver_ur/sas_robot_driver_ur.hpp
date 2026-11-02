@@ -77,6 +77,14 @@ public:
     //void set_target_joint_velocities(const Eigen::VectorXd& desired_joint_velocities_rads) override; //Not possible (yet?)
 
     /**
+     * @brief Get the joint torques estimated by the robot controller (RTDE actual_current_as_torque).
+     * @return Vector containing the estimated torque (Nm) of each joint.
+     * @throws std::runtime_error while no torque sample has been received, e.g. the firmware
+     * predates the field or the output recipe does not request it.
+     */
+    Eigen::VectorXd get_joint_torques() override;
+
+    /**
      * @brief Get the current force estimated at the TCP by the robot controller.
      * @return Vector3d [Fx, Fy, Fz], given in the robot's base frame.
      */

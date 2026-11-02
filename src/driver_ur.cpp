@@ -97,6 +97,15 @@ int communication_thread_loop(std::shared_ptr<UrDriver> ur_driver,
                 ur_joint_information_manager->set_current_joint_velocities(joint_velocities);
                 ur_joint_information_manager->set_current_tcp_force(tcp_force);
 
+                // Controller-estimated joint torques. Optional on purpose: robots whose firmware
+                // predates the field (or whose output recipe lacks it) never deliver it, and the
+                // driver leaves the torques invalid instead of killing the loop.
+                vector6d_t joint_torques;
+                if (data_pkg.getData("actual_current_as_torque", joint_torques))
+                {
+                    ur_joint_information_manager->set_current_joint_torques(joint_torques);
+                }
+
                 // Murilo: We should be sure that valid joint positions are available in the buffer.
                 if(ur_joint_information_manager->is_target_joint_position_valid())
                 {

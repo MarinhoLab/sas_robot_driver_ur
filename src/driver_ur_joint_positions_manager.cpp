@@ -74,3 +74,17 @@ urcl::vector6d_t sas::URJointInformationManager::get_current_tcp_force()
     std::scoped_lock lock(mutex_current_tcp_force_);
     return current_tcp_force_;
 }
+
+void sas::URJointInformationManager::set_current_joint_torques(const urcl::vector6d_t& joint_torques)
+{
+    std::scoped_lock lock(mutex_current_joint_torques_);
+    if(!is_current_joint_torque_valid())
+        current_joint_torque_valid_ = true;
+    current_joint_torques_ = joint_torques;
+}
+
+urcl::vector6d_t sas::URJointInformationManager::get_current_joint_torques()
+{
+    std::scoped_lock lock(mutex_current_joint_torques_);
+    return current_joint_torques_;
+}
