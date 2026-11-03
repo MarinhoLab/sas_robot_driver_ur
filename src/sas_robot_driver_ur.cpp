@@ -64,6 +64,10 @@ RobotDriverUR::RobotDriverUR(const RobotDriverURConfiguration& configuration, st
     impl_->dashboard_client_ = std::make_unique<urcl::DashboardClient>(configuration_.ip);
     impl_->ur_joint_information_manager_ = std::make_shared<sas::URJointInformationManager>();
     joint_limits_ = configuration.joint_limits;
+    // The core lib's ShutdownSignaler ctor sets the deprecated break_loops_ to nullptr,
+    // but this class still uses it (initialize() wait loop, communication thread,
+    // deinitialize()), so keep it pointed at the caller's flag.
+    break_loops_ = break_loops;
 }
 
 RobotDriverUR::~RobotDriverUR()
