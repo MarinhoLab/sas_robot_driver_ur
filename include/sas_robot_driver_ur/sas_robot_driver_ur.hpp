@@ -51,6 +51,12 @@ struct RobotDriverURConfiguration
 
     bool turn_robot_off_on_connect = true;
     bool turn_robot_off_on_disconnect = true;
+
+    // When true, the driver only streams joint feedback (RTDE): no dashboard
+    // commands (stop/power on/power off/brake release) are sent and the external
+    // control program is not started, so the teach pendant keeps full control
+    // (e.g. free-drive) while the driver reads joint states.
+    bool monitoring_mode = false;
 };
 
 class RobotDriverUR: public RobotDriver
