@@ -31,6 +31,8 @@
 #include <ur_client_library/ur/ur_driver.h>
 #include <ur_client_library/types.h>
 
+#include <marinholab/sas/core/sas_shutdown_signaler.hpp>
+
 #include "driver_ur_joint_positions_manager.hpp"
 
 using namespace urcl;
@@ -45,7 +47,7 @@ void handleRobotProgramState(bool)
 
 int communication_thread_loop(std::shared_ptr<UrDriver> ur_driver,
                               std::shared_ptr<sas::URJointInformationManager> ur_joint_information_manager,
-                              std::atomic_bool* break_loops)
+                              std::shared_ptr<marinholab::sas::core::ShutdownSignaler> shutdown_signaler)
 {
     //Murilo: despite the many modifications, I've left the original comments from the example, hoping that they might be useful in the future.
 
@@ -56,7 +58,7 @@ int communication_thread_loop(std::shared_ptr<UrDriver> ur_driver,
 
     try {
         rtde_interface::DataPackage data_pkg(ur_driver->getRTDEOutputRecipe());
-        while (!(*break_loops))
+        while (!shutdown_signaler->should_shutdown())
         {
             // Read latest RTDE package. This will block for a hard-coded timeout (see UrDriver), so the
             // robot will effectively be in charge of setting the frequency of this loop.
@@ -129,7 +131,7 @@ int communication_thread_loop(std::shared_ptr<UrDriver> ur_driver,
     } catch (const std::exception& e) {
         //Murilo: Break loops in case of exceptions.
         std::cout << e.what() << std::endl;
-        break_loops->store(true);
+        shutdown_signaler->shutdown();
     }
 
     ur_driver->stopControl();

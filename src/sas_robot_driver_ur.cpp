@@ -56,18 +56,14 @@ public:
 
 };
 
-RobotDriverUR::RobotDriverUR(const RobotDriverURConfiguration& configuration, std::atomic_bool* break_loops):
-    RobotDriver(std::make_shared<marinholab::sas::core::ShutdownSignaler>(break_loops)),
+RobotDriverUR::RobotDriverUR(const RobotDriverURConfiguration& configuration, const std::shared_ptr<marinholab::sas::core::ShutdownSignaler>& shutdown_signaler):
+    RobotDriver(shutdown_signaler),
     configuration_(configuration)
 {
     impl_ = std::make_unique<RobotDriverUR::Impl>();
     impl_->dashboard_client_ = std::make_unique<urcl::DashboardClient>(configuration_.ip);
     impl_->ur_joint_information_manager_ = std::make_shared<sas::URJointInformationManager>();
     joint_limits_ = configuration.joint_limits;
-    // The core lib's ShutdownSignaler ctor sets the deprecated break_loops_ to nullptr,
-    // but this class still uses it (initialize() wait loop, communication thread,
-    // deinitialize()), so keep it pointed at the caller's flag.
-    break_loops_ = break_loops;
 }
 
 RobotDriverUR::~RobotDriverUR()
@@ -206,11 +202,11 @@ void RobotDriverUR::initialize()
 
     impl_->ur_driver_ = std::make_shared<urcl::UrDriver>(ur_driver_config);
 
-    fri_thread_ = std::thread(communication_thread_loop, impl_->ur_driver_, impl_->ur_joint_information_manager_, break_loops_);
+    fri_thread_ = std::thread(communication_thread_loop, impl_->ur_driver_, impl_->ur_joint_information_manager_, shutdown_signaler_);
 
     // We need meaningful information to be obtained from the robot before moving on.
-    // In addition, we guarantee that this doesn't lock us with break_loops.
-    while (!(*break_loops_) && !impl_->ur_joint_information_manager_->is_current_joint_position_valid())
+    // In addition, we guarantee that this doesn't lock us with the shutdown signal.
+    while (!shutdown_signaler_->should_shutdown() && !impl_->ur_joint_information_manager_->is_current_joint_position_valid())
     {
         std::cout << "Waiting for valid joint configuration..." << std::endl;
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
@@ -236,7 +232,7 @@ void RobotDriverUR::deinitialize()
     }
 
     //To force the thread to shutdown if it hasn't already done so
-    *break_loops_ = true;
+    shutdown_signaler_->shutdown();
 
     if (fri_thread_.joinable())
         fri_thread_.join();

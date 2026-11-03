@@ -92,8 +92,9 @@ int main(int argc, char** argv)
 
 
         RCLCPP_INFO_STREAM_ONCE(node->get_logger(), "::Instantiating RobotDriverUR.");
+        auto shutdown_signaler = std::make_shared<marinholab::sas::core::ShutdownSignaler>(&kill_this_process);
         auto robot_driver_ur = std::make_shared<sas::RobotDriverUR>(configuration,
-                                                                        &kill_this_process);
+                                                                        shutdown_signaler);
 
         RCLCPP_INFO_STREAM_ONCE(node->get_logger(), "::Instantiating ForceSensorServer.");
         sas::ForceSensorServer force_sensor_server(node, robot_driver_ros_configuration.robot_driver_provider_prefix);
@@ -113,7 +114,7 @@ int main(int argc, char** argv)
         sas::RobotDriverROS robot_driver_ros(node,
                                              robot_driver_ur,
                                              robot_driver_ros_configuration,
-                                             std::make_shared<marinholab::sas::core::ShutdownSignaler>(&kill_this_process));
+                                             shutdown_signaler);
         robot_driver_ros.control_loop();
 
     }

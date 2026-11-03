@@ -24,10 +24,11 @@
 #
 # ################################################################*/
 
-#include <atomic>
+#include <memory>
 #include <thread>
 
 #include <sas_core/sas_robot_driver.hpp>
+#include <marinholab/sas/core/sas_shutdown_signaler.hpp>
 
 
 namespace sas
@@ -74,7 +75,7 @@ public:
     RobotDriverUR()=delete;
     ~RobotDriverUR();
 
-    RobotDriverUR(const RobotDriverURConfiguration &configuration, std::atomic_bool* break_loops);
+    RobotDriverUR(const RobotDriverURConfiguration &configuration, const std::shared_ptr<marinholab::sas::core::ShutdownSignaler>& shutdown_signaler);
 
     Eigen::VectorXd get_joint_positions() override;
     void set_target_joint_positions(const Eigen::VectorXd& desired_joint_positions_rad) override;
