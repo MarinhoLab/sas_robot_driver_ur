@@ -30,6 +30,7 @@
 | `thread_sampling_time_sec` | double | **Mandatory** | none — must be provided | Sampling period of the robot control-loop thread (e.g. `0.002` s = 500 Hz) |
 | `turn_robot_off_on_connect` | bool | Optional | `true` | Whether to power the robot off when connecting |
 | `turn_robot_off_on_disconnect` | bool | Optional | `true` | Whether to power the robot off on disconnect |
+| `monitoring_mode` | bool | Optional | `false` | Feedback-only teaching mode: no dashboard commands at all (no program stop, no power on/off, no brake release) and the external control program is not started, so the teach pendant keeps full control (e.g. free-drive). Joint feedback keeps streaming from RTDE, which serves even in `POWER_OFF` |
 
 **How mandatory/optional is determined in code:**
 - **Mandatory** params are read with `sas::get_ros_parameter(...)` — if missing, the node throws and fails to start.
