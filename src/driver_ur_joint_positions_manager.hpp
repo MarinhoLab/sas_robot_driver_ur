@@ -49,6 +49,7 @@ private:
     bool current_joint_torque_valid_{false};
     urcl::vector6d_t current_joint_torques_;
     std::mutex mutex_current_joint_torques_;
+
 public:
     void set_current_joint_positions(const urcl::vector6d_t& joint_positions);
     urcl::vector6d_t get_current_joint_positions();
@@ -65,29 +66,14 @@ public:
     void set_current_joint_torques(const urcl::vector6d_t& joint_torques);
     urcl::vector6d_t get_current_joint_torques();
 
-    bool is_current_joint_position_valid()
-    {
-        return current_joint_position_valid_;
-    }
+    bool is_current_joint_position_valid() { return current_joint_position_valid_; }
 
-    bool is_target_joint_position_valid()
-    {
-        return target_joint_position_valid_;
-    }
+    bool is_target_joint_position_valid() { return target_joint_position_valid_; }
 
-    bool is_current_joint_velocity_valid()
-    {
-        return current_joint_velocity_valid_;
-    }
+    bool is_current_joint_velocity_valid() { return current_joint_velocity_valid_; }
 
-    bool is_current_tcp_force_valid()
-    {
-        return current_tcp_force_valid_;
-    }
+    bool is_current_tcp_force_valid() { return current_tcp_force_valid_; }
 
-    bool is_current_joint_torque_valid()
-    {
-        return current_joint_torque_valid_;
-    }
+    bool is_current_joint_torque_valid() { return current_joint_torque_valid_; }
 };
-}
+}  // namespace sas

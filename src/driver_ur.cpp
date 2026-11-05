@@ -56,7 +56,8 @@ int communication_thread_loop(std::shared_ptr<UrDriver> ur_driver,
     // loop.
     ur_driver->startRTDECommunication();
 
-    try {
+    try
+    {
         rtde_interface::DataPackage data_pkg(ur_driver->getRTDEOutputRecipe());
         while (!shutdown_signaler->should_shutdown())
         {
@@ -90,7 +91,8 @@ int communication_thread_loop(std::shared_ptr<UrDriver> ur_driver,
                 if (!data_pkg.getData("actual_TCP_force", tcp_force))
                 {
                     // This throwing should never happen unless misconfigured
-                    std::string error_msg = "Did not find 'actual_TCP_force' in data sent from robot. This should not happen!";
+                    std::string error_msg =
+                        "Did not find 'actual_TCP_force' in data sent from robot. This should not happen!";
                     throw std::runtime_error(error_msg);
                 }
 
@@ -109,13 +111,14 @@ int communication_thread_loop(std::shared_ptr<UrDriver> ur_driver,
                 }
 
                 // Murilo: We should be sure that valid joint positions are available in the buffer.
-                if(ur_joint_information_manager->is_target_joint_position_valid())
+                if (ur_joint_information_manager->is_target_joint_position_valid())
                 {
                     // Setting the RobotReceiveTimeout time is for example purposes only. This will make the example running more
                     // reliable on non-realtime systems. Use with caution in productive applications.
                     // Murilo: This will run on a realtime system, so I've removed it, i.e., it defaults to 20ms
                     // The target joint positions is obtained from the thread-safe object
-                    bool ret = ur_driver->writeJointCommand(ur_joint_information_manager->get_target_joint_positions(), comm::ControlMode::MODE_SERVOJ);
+                    bool ret = ur_driver->writeJointCommand(ur_joint_information_manager->get_target_joint_positions(),
+                                                            comm::ControlMode::MODE_SERVOJ);
                     if (!ret)
                     {
                         std::string error_msg = "Could not send joint command. Is the robot in remote control?";
@@ -128,7 +131,9 @@ int communication_thread_loop(std::shared_ptr<UrDriver> ur_driver,
                 URCL_LOG_WARN("Could not get fresh data package from robot");
             }
         }
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception& e)
+    {
         //Murilo: Break loops in case of exceptions.
         std::cout << e.what() << std::endl;
         shutdown_signaler->shutdown();

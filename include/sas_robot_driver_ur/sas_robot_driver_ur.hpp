@@ -30,7 +30,6 @@
 #include <sas_core/sas_robot_driver.hpp>
 #include <marinholab/sas/core/sas_shutdown_signaler.hpp>
 
-
 namespace sas
 {
 
@@ -48,7 +47,7 @@ struct RobotDriverURConfiguration
     std::string output_recipe;
     std::string input_recipe;
     std::string calibration_checksum;
-    std::tuple<Eigen::VectorXd,Eigen::VectorXd> joint_limits;
+    std::tuple<Eigen::VectorXd, Eigen::VectorXd> joint_limits;
 
     bool turn_robot_off_on_connect = true;
     bool turn_robot_off_on_disconnect = true;
@@ -60,7 +59,7 @@ struct RobotDriverURConfiguration
     bool monitoring_mode = false;
 };
 
-class RobotDriverUR: public RobotDriver
+class RobotDriverUR : public RobotDriver
 {
 private:
     RobotDriverURConfiguration configuration_;
@@ -69,13 +68,14 @@ private:
     //Implementation details that depend on FRI source files.
     class Impl;
     std::unique_ptr<Impl> impl_;
-public:
 
-    RobotDriverUR(const RobotDriverUR&)=delete;
-    RobotDriverUR()=delete;
+public:
+    RobotDriverUR(const RobotDriverUR&) = delete;
+    RobotDriverUR() = delete;
     ~RobotDriverUR();
 
-    RobotDriverUR(const RobotDriverURConfiguration &configuration, const std::shared_ptr<marinholab::sas::core::ShutdownSignaler>& shutdown_signaler);
+    RobotDriverUR(const RobotDriverURConfiguration& configuration,
+                  const std::shared_ptr<marinholab::sas::core::ShutdownSignaler>& shutdown_signaler);
 
     Eigen::VectorXd get_joint_positions() override;
     void set_target_joint_positions(const Eigen::VectorXd& desired_joint_positions_rad) override;
@@ -108,6 +108,5 @@ public:
 
     void initialize() override;
     void deinitialize() override;
-
 };
-}
+}  // namespace sas

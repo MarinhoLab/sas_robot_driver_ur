@@ -23,7 +23,6 @@
 #
 # ################################################################*/
 
-
 #include "sas_robot_driver_ur/sas_robot_driver_ur.hpp"
 #include <iostream>
 #include <memory>
@@ -41,24 +40,19 @@ namespace sas
 
 class RobotDriverUR::Impl
 {
-
 public:
     std::shared_ptr<urcl::UrDriver> ur_driver_;
     std::unique_ptr<urcl::DashboardClient> dashboard_client_;
     std::shared_ptr<sas::URJointInformationManager> ur_joint_information_manager_;
 
-    Impl()
-        {
+    Impl() {
 
-        };
-
-
-
+    };
 };
 
-RobotDriverUR::RobotDriverUR(const RobotDriverURConfiguration& configuration, const std::shared_ptr<marinholab::sas::core::ShutdownSignaler>& shutdown_signaler):
-    RobotDriver(shutdown_signaler),
-    configuration_(configuration)
+RobotDriverUR::RobotDriverUR(const RobotDriverURConfiguration& configuration,
+                             const std::shared_ptr<marinholab::sas::core::ShutdownSignaler>& shutdown_signaler)
+    : RobotDriver(shutdown_signaler), configuration_(configuration)
 {
     impl_ = std::make_unique<RobotDriverUR::Impl>();
     impl_->dashboard_client_ = std::make_unique<urcl::DashboardClient>(configuration_.ip);
@@ -66,10 +60,7 @@ RobotDriverUR::RobotDriverUR(const RobotDriverURConfiguration& configuration, co
     joint_limits_ = configuration.joint_limits;
 }
 
-RobotDriverUR::~RobotDriverUR()
-{
-
-}
+RobotDriverUR::~RobotDriverUR() {}
 
 Eigen::VectorXd RobotDriverUR::get_joint_positions()
 {
@@ -79,17 +70,15 @@ Eigen::VectorXd RobotDriverUR::get_joint_positions()
     return sas::std_vector_double_to_vectorxd(std_vector);
 }
 
-void RobotDriverUR::set_target_joint_positions(const Eigen::VectorXd &desired_joint_positions_rad)
+void RobotDriverUR::set_target_joint_positions(const Eigen::VectorXd& desired_joint_positions_rad)
 {
-    if(desired_joint_positions_rad.size() != 6)
+    if (desired_joint_positions_rad.size() != 6)
         throw std::runtime_error("Incorrect vector size in RobotDriverUR::set_target_joint_positions");
 
-    urcl::vector6d_t std_array{desired_joint_positions_rad(0),
-        desired_joint_positions_rad(1),
-        desired_joint_positions_rad(2),
-        desired_joint_positions_rad(3),
-        desired_joint_positions_rad(4),
-        desired_joint_positions_rad(5),};
+    urcl::vector6d_t std_array{
+        desired_joint_positions_rad(0), desired_joint_positions_rad(1), desired_joint_positions_rad(2),
+        desired_joint_positions_rad(3), desired_joint_positions_rad(4), desired_joint_positions_rad(5),
+    };
     impl_->ur_joint_information_manager_->set_target_joint_positions(std_array);
 }
 
@@ -103,7 +92,9 @@ Eigen::VectorXd RobotDriverUR::get_joint_velocities()
 Eigen::VectorXd RobotDriverUR::get_joint_torques()
 {
     if (!impl_->ur_joint_information_manager_->is_current_joint_torque_valid())
-        throw std::runtime_error("No joint torques received yet. Is 'actual_current_as_torque' in the RTDE output recipe and the robot firmware recent enough to provide it?");
+        throw std::runtime_error(
+            "No joint torques received yet. Is 'actual_current_as_torque' in the RTDE output recipe and the robot "
+            "firmware recent enough to provide it?");
     auto std_array = impl_->ur_joint_information_manager_->get_current_joint_torques();
     std::vector<double> std_vector(std_array.begin(), std_array.end());
     return sas::std_vector_double_to_vectorxd(std_vector);
@@ -113,14 +104,14 @@ Eigen::VectorXd RobotDriverUR::get_tcp_force()
 {
     //The UR libraries use std::array and it's more efficient to keep conversion functions out of the realtime loop, hence, here.
     auto std_array = impl_->ur_joint_information_manager_->get_current_tcp_force();
-    std::vector<double> std_vector(std_array.begin(), std_array.begin()+3);
+    std::vector<double> std_vector(std_array.begin(), std_array.begin() + 3);
     return sas::std_vector_double_to_vectorxd(std_vector);
 }
 
 Eigen::VectorXd RobotDriverUR::get_tcp_torque()
 {
     auto std_array = impl_->ur_joint_information_manager_->get_current_tcp_force();
-    std::vector<double> std_vector(std_array.begin()+3, std_array.end());
+    std::vector<double> std_vector(std_array.begin() + 3, std_array.end());
     return sas::std_vector_double_to_vectorxd(std_vector);
 }
 
@@ -149,7 +140,6 @@ void RobotDriverUR::connect()
     }
 }
 
-
 void RobotDriverUR::initialize()
 {
     if (configuration_.monitoring_mode)
@@ -161,7 +151,7 @@ void RobotDriverUR::initialize()
     else
     {
         std::string current_robot_mode = std::string("NONE");
-        if(!impl_->dashboard_client_->commandRobotMode(current_robot_mode))
+        if (!impl_->dashboard_client_->commandRobotMode(current_robot_mode))
             throw std::runtime_error("Could not get robot mode");
         std::cout << "Current robot mode: " << current_robot_mode << std::endl;
 
@@ -202,17 +192,18 @@ void RobotDriverUR::initialize()
 
     impl_->ur_driver_ = std::make_shared<urcl::UrDriver>(ur_driver_config);
 
-    fri_thread_ = std::thread(communication_thread_loop, impl_->ur_driver_, impl_->ur_joint_information_manager_, shutdown_signaler_);
+    fri_thread_ = std::thread(communication_thread_loop, impl_->ur_driver_, impl_->ur_joint_information_manager_,
+                              shutdown_signaler_);
 
     // We need meaningful information to be obtained from the robot before moving on.
     // In addition, we guarantee that this doesn't lock us with the shutdown signal.
-    while (!shutdown_signaler_->should_shutdown() && !impl_->ur_joint_information_manager_->is_current_joint_position_valid())
+    while (!shutdown_signaler_->should_shutdown() &&
+           !impl_->ur_joint_information_manager_->is_current_joint_position_valid())
     {
         std::cout << "Waiting for valid joint configuration..." << std::endl;
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
 }
-
 
 /**
  * @brief RobotDriverUR::deinitialize.
@@ -225,7 +216,7 @@ void RobotDriverUR::deinitialize()
         // Stop program, if there is one running
         impl_->dashboard_client_->commandStop();
         // Power it off
-        if(configuration_.turn_robot_off_on_disconnect)
+        if (configuration_.turn_robot_off_on_disconnect)
         {
             impl_->dashboard_client_->commandPowerOff();
         }
@@ -244,4 +235,4 @@ void RobotDriverUR::disconnect()
     impl_->dashboard_client_->disconnect();
 }
 
-}
+}  // namespace sas
