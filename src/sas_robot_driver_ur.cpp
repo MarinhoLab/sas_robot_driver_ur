@@ -24,8 +24,10 @@
 # ################################################################*/
 
 #include "sas_robot_driver_ur/sas_robot_driver_ur.hpp"
+#include <chrono>
 #include <iostream>
 #include <memory>
+#include <thread>
 
 #include <ur_client_library/ur/dashboard_client.h>
 #include <ur_client_library/ur/ur_driver.h>
@@ -161,6 +163,25 @@ void RobotDriverUR::initialize()
             std::cout << "Powering robot on..." << std::endl;
             if (!impl_->dashboard_client_->commandPowerOn())
                 throw std::runtime_error("Could not send Power on command");
+
+            // The controller needs about a second to energize: re-reading the mode
+            // within milliseconds still reported POWER_OFF, so the brake release below
+            // (gated on IDLE) was skipped and the control program started on an
+            // unpowered arm, which never connects back over the reverse socket. Wait
+            // until the controller reaches a ready mode.
+            const std::chrono::steady_clock::time_point deadline =
+                std::chrono::steady_clock::now() + std::chrono::seconds(5);
+            while (current_robot_mode != "Robotmode: IDLE" &&
+                   current_robot_mode != "Robotmode: RUNNING")
+            {
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
+                if (std::chrono::steady_clock::now() > deadline)
+                    throw std::runtime_error("The robot did not power on within 5 s "
+                                             "(is the pendant emergency stop pressed?)");
+                if (!impl_->dashboard_client_->commandRobotMode(current_robot_mode))
+                    throw std::runtime_error("Could not get robot mode");
+                std::cout << "Current robot mode: " << current_robot_mode << std::endl;
+            }
         }
 
         // Get the mode once more
