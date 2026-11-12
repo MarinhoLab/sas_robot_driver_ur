@@ -40,6 +40,20 @@
 namespace sas
 {
 
+namespace
+{
+// URCL's commandRobotMode() hands back the bare mode name (e.g. "POWER_OFF" on the X
+// dashboard's JSON "mode" field, or the capture group of the G5 "Robotmode: ..." reply);
+// older builds returned the raw dashboard line. Normalise so comparisons match both.
+std::string robot_mode_name(const std::string& robot_mode)
+{
+    const std::string prefix = "Robotmode: ";
+    if (robot_mode.rfind(prefix, 0) == 0)
+        return robot_mode.substr(prefix.size());
+    return robot_mode;
+}
+}  // namespace
+
 class RobotDriverUR::Impl
 {
 public:
@@ -155,10 +169,11 @@ void RobotDriverUR::initialize()
         std::string current_robot_mode = std::string("NONE");
         if (!impl_->dashboard_client_->commandRobotMode(current_robot_mode))
             throw std::runtime_error("Could not get robot mode");
+        current_robot_mode = robot_mode_name(current_robot_mode);
         std::cout << "Current robot mode: " << current_robot_mode << std::endl;
 
         // Power it on
-        if (current_robot_mode == "Robotmode: POWER_OFF")
+        if (current_robot_mode == "POWER_OFF")
         {
             std::cout << "Powering robot on..." << std::endl;
             if (!impl_->dashboard_client_->commandPowerOn())
@@ -169,9 +184,13 @@ void RobotDriverUR::initialize()
             // (gated on IDLE) was skipped and the control program started on an
             // unpowered arm, which never connects back over the reverse socket. Wait
             // until the controller reaches a ready mode.
+            // commandPowerOn() blocks until the arm is ready on the G5 dashboard but only
+            // waits out the request on the X dashboard, so the mode can still be
+            // POWER_OFF here: poll until the controller reaches a ready mode before the
+            // brake release (gated on IDLE) and the control program start below.
             const std::chrono::steady_clock::time_point deadline =
                 std::chrono::steady_clock::now() + std::chrono::seconds(5);
-            while (current_robot_mode != "Robotmode: IDLE" && current_robot_mode != "Robotmode: RUNNING")
+            while (current_robot_mode != "IDLE" && current_robot_mode != "RUNNING")
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 if (std::chrono::steady_clock::now() > deadline)
@@ -180,16 +199,18 @@ void RobotDriverUR::initialize()
                         "(is the pendant emergency stop pressed?)");
                 if (!impl_->dashboard_client_->commandRobotMode(current_robot_mode))
                     throw std::runtime_error("Could not get robot mode");
+                current_robot_mode = robot_mode_name(current_robot_mode);
                 std::cout << "Current robot mode: " << current_robot_mode << std::endl;
             }
         }
 
         // Get the mode once more
         impl_->dashboard_client_->commandRobotMode(current_robot_mode);
+        current_robot_mode = robot_mode_name(current_robot_mode);
         std::cout << "Current robot mode: " << current_robot_mode << std::endl;
 
         // Release the brakes
-        if (current_robot_mode == "Robotmode: IDLE")
+        if (current_robot_mode == "IDLE")
         {
             std::cout << "Releasing breaks..." << std::endl;
             if (!impl_->dashboard_client_->commandBrakeRelease())
