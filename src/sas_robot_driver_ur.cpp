@@ -171,13 +171,13 @@ void RobotDriverUR::initialize()
             // until the controller reaches a ready mode.
             const std::chrono::steady_clock::time_point deadline =
                 std::chrono::steady_clock::now() + std::chrono::seconds(5);
-            while (current_robot_mode != "Robotmode: IDLE" &&
-                   current_robot_mode != "Robotmode: RUNNING")
+            while (current_robot_mode != "Robotmode: IDLE" && current_robot_mode != "Robotmode: RUNNING")
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 if (std::chrono::steady_clock::now() > deadline)
-                    throw std::runtime_error("The robot did not power on within 5 s "
-                                             "(is the pendant emergency stop pressed?)");
+                    throw std::runtime_error(
+                        "The robot did not power on within 5 s "
+                        "(is the pendant emergency stop pressed?)");
                 if (!impl_->dashboard_client_->commandRobotMode(current_robot_mode))
                     throw std::runtime_error("Could not get robot mode");
                 std::cout << "Current robot mode: " << current_robot_mode << std::endl;
